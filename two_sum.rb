@@ -11,13 +11,19 @@ require "minitest/autorun"
 # @param {Integer} target
 # @return {Integer[]}
 def two_sum(nums, target)
-  
+  nums.each.with_index do |num, ndx1|
+    nums[(ndx1 + 1)..-1].each.with_index do |other_num, ndx2|
+      return [ndx1, ndx1 + ndx2 + 1] if num + other_num == target
+    end
+  end
+
+  nil
 end
 
 describe "#two_sum" do
   it "returns the indices of the two numbers such that they add up to the target" do
-    assert_equal(two_sum([2, 7, 11, 15], 9), [0, 1])
-    assert_equal(two_sum([2, 7, 11, 15], 18), [1, 2])
-    assert_equal(two_sum([2, 7, 11, 15], 17), [0, 3])
+    assert_equal([0, 1], two_sum([2, 7, 11, 15], 9))
+    assert_equal([1, 2], two_sum([2, 7, 11, 15], 18))
+    assert_equal([0, 3], two_sum([2, 7, 11, 15], 17))
   end
 end
