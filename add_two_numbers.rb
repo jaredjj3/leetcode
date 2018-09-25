@@ -53,6 +53,8 @@ def add_two_numbers(l1, l2)
     carry_one = set_carry_one_to
   end
 
+  curr_sum_node.next = ListNode.new(1) if carry_one
+
   result
 end
 
@@ -66,16 +68,24 @@ describe "#add_two_numbers" do
     end
   end
 
-  it "solves the problem prompt" do
-    l1 = linked_list([2, 4, 3]).first
-    l2 = linked_list([5, 6, 4]).first
+  def assert_add_two_numbers(vals1, vals2, sum_vals)
+    l1 = linked_list(vals1).first
+    l2 = linked_list(vals2).first
 
     result = add_two_numbers(l1, l2)
-    [7, 0, 8].each do |expected_val|
+    sum_vals.each do |expected_val|
       assert_equal(expected_val, result.val)
       result = result.next
     end
 
     assert_nil(result)
+  end
+
+  it "solves the problem prompt" do
+    assert_add_two_numbers([2, 4, 3], [5, 6, 4], [7, 0, 8])
+  end
+
+  it "handles adding over 10 in the highest place" do
+    assert_add_two_numbers([0, 0, 9], [0, 0, 1], [0, 0, 0, 1])
   end
 end
