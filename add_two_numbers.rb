@@ -22,7 +22,38 @@ end
 # @param {ListNode} l2
 # @return {ListNode}
 def add_two_numbers(l1, l2)
-  []
+  node1 = l1
+  node2 = l2
+  curr_sum_node = nil
+  result = nil
+  carry_one = false
+
+  until node1.nil? || node2.nil?
+    set_carry_one_to = false
+    next_val = node1.val + node2.val + (carry_one ? 1 : 0)
+
+    if next_val >= 10
+      set_carry_one_to = true
+      next_val = next_val.to_s.chars[1].to_i
+    end
+
+    next_val_node = ListNode.new(next_val)
+    result ||= next_val_node
+
+    if curr_sum_node.nil?
+      curr_sum_node = next_val_node
+    else
+      curr_sum_node.next = next_val_node
+      curr_sum_node = next_val_node
+    end
+
+    node1 = node1.next
+    node2 = node2.next
+
+    carry_one = set_carry_one_to
+  end
+
+  result
 end
 
 describe "#add_two_numbers" do
@@ -38,6 +69,13 @@ describe "#add_two_numbers" do
   it "solves the problem prompt" do
     l1 = linked_list([2, 4, 3]).first
     l2 = linked_list([5, 6, 4]).first
-    assert_equal([7, 0, 8], add_two_numbers(l1, l2).map(&:val))
+
+    result = add_two_numbers(l1, l2)
+    [7, 0, 8].each do |expected_val|
+      assert_equal(expected_val, result.val)
+      result = result.next
+    end
+
+    assert_nil(result)
   end
 end
