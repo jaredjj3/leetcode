@@ -11,11 +11,13 @@ require "minitest/autorun"
 # @param {Integer} target
 # @return {Integer[]}
 def two_sum(nums, target)
-
+  
 end
 
 describe "#two_sum" do
-  it "works" do
-    assert_nil(two_sum("foo", "bar"))
+  it "returns the indices of the two numbers such that they add up to the target" do
+    assert_equal(two_sum([2, 7, 11, 15], 9), [0, 1])
+    assert_equal(two_sum([2, 7, 11, 15], 18), [1, 2])
+    assert_equal(two_sum([2, 7, 11, 15], 17), [0, 3])
   end
 end
