@@ -18,6 +18,8 @@ class ListNode
     end
 end
 
+# SOLUTION 1: O(n) time, O(1) space
+#
 # @param {ListNode} l1
 # @param {ListNode} l2
 # @return {ListNode}
@@ -28,9 +30,11 @@ def add_two_numbers(l1, l2)
   result = nil
   carry_one = false
 
-  until node1.nil? || node2.nil?
+  until node1.nil? && node2.nil?
     set_carry_one_to = false
-    next_val = node1.val + node2.val + (carry_one ? 1 : 0)
+    val1 = (node1 && node1.val) || 0
+    val2 = (node2 && node2.val) || 0
+    next_val = val1 + val2 + (carry_one ? 1 : 0)
 
     if next_val >= 10
       set_carry_one_to = true
@@ -47,8 +51,8 @@ def add_two_numbers(l1, l2)
       curr_sum_node = next_val_node
     end
 
-    node1 = node1.next
-    node2 = node2.next
+    node1 = node1.next unless node1.nil?
+    node2 = node2.next unless node2.nil?
 
     carry_one = set_carry_one_to
   end
@@ -87,5 +91,9 @@ describe "#add_two_numbers" do
 
   it "handles adding over 10 in the highest place" do
     assert_add_two_numbers([0, 0, 9], [0, 0, 1], [0, 0, 0, 1])
+  end
+
+  it "handles adding numbers of different sizes" do
+    assert_add_two_numbers([1, 8], [0], [1, 8])
   end
 end
