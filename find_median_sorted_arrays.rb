@@ -23,7 +23,9 @@ require "minitest/autorun"
 # @param {Integer[]} nums2
 # @return {Float}
 def find_median_sorted_arrays(nums1, nums2)
-    
+  nums = [*nums1, *nums2].sort
+  half_length = nums.length / 2
+  nums.length % 2 == 0 ? (nums[half_length] + nums[half_length - 1]) / 2.0 : nums[half_length].to_f
 end
 
 describe "#find_median_sorted_arrays" do
