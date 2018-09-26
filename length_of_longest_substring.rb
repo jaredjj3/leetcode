@@ -20,7 +20,7 @@ require "minitest/autorun"
 
 require "set"
 
-# SOLUTION 1: O(n**2) time, O(n) space
+# SOLUTION 1: O(n**3) time, O(n) space
 #
 # @param {String} s
 # @return {Integer}
