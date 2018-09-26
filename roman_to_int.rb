@@ -42,7 +42,46 @@ require "minitest/autorun"
 # Output: 1994
 # Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 
+VALUES = {
+  "I"  => 1,
+  "IV" => 4,
+  "V"  => 5,
+  "IX" => 9,
+  "X"  => 10,
+  "XL" => 40,
+  "L"  => 50,
+  "XC" => 90,
+  "C"  => 100,
+  "CD" => 400,
+  "D"  => 500,
+  "CM" => 900,
+  "M"  => 1000
+}.freeze
+
+# @param {String} s
+# @return {Integer}
 def roman_to_int(str)
+  sum = 0
+  skip_next = false
+
+  [*str.chars, nil].each_cons(2) do |tokens|
+    if skip_next
+      skip_next = false
+      next
+    end
+    
+    tokens_together = tokens.join("")
+
+    if VALUES.key?(tokens_together)
+      skip_next = true
+      sum += VALUES[tokens_together]
+    else
+      skip_next = false
+      sum += VALUES[tokens[0]]
+    end
+  end
+
+  sum
 end
 
 describe "#roman_to_int" do
@@ -70,16 +109,16 @@ describe "#roman_to_int" do
     assert_equal(400, roman_to_int("CD"))
   end
 
-  it "can handle the special case for 400" do
-    assert_equal(400, roman_to_int("CD"))
-  end
-
   it "can handle the special case for 900" do
     assert_equal(900, roman_to_int("CM"))
   end
 
   it "can handle the other prompt examples" do
-    assert_equal(58, "LVIII")
-    assert_equal(1994, "MCMXCIV")
+    assert_equal(58, roman_to_int("LVIII"))
+    assert_equal(1994, roman_to_int("MCMXCIV"))
+  end
+
+  it "can handle other examples" do
+    assert_equal(621 ,roman_to_int("DCXXI"))
   end
 end
