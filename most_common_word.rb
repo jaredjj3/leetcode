@@ -29,11 +29,39 @@ require "minitest/autorun"
 # There are no hyphens or hyphenated words.
 # Words only consist of letters, never apostrophes or other punctuation symbols.
 
+require "set"
+
 # @param {String} paragraph
 # @param {String[]} banned
 # @return {String}
 def most_common_word(paragraph, banned)
-    
+  word_frequencies = normalize(paragraph).split(" ").reduce(Hash.new { |h, k| h[k] = 0 }) do |memo, word|
+    memo[word] += 1
+    memo
+  end
+
+  banned_set = banned.to_set
+
+  most_frequent_word_and_frequency = word_frequencies.max_by do |(word, frequency)|
+    next -Float::INFINITY if banned_set.include?(word)
+    frequency
+  end
+
+  most_frequent_word_and_frequency.first
+end
+
+def normalize(str)
+  str.gsub(/[^a-zA-Z\s]/, " ").squeeze(" ").lstrip.rstrip.downcase
+end
+
+describe "#normalize" do
+  it "removes non letter characters" do
+    assert_equal("foo bar baz", normalize("foo;. !bar! baz."))
+  end
+
+  it "handles obscure punctuation correctly" do
+    assert_equal("a a a a b b b c c", normalize("a, a, a, a, b,b,b,c, c"))
+  end
 end
 
 describe "#most_common_word" do
