@@ -1,135 +1,90 @@
 require "minitest/autorun"
+require "byebug"
 
-# Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and put.
+# PROMPT
+=begin
+Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and put.
 
-# get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
-# put(key, value) - Set or insert the value if the key is not already present. When the cache
-# reached its capacity, it should invalidate the least recently used item before inserting a new item.
+get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
+put(key, value) - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
 
-# Follow up:
-# Could you do both operations in O(1) time complexity?
+Follow up:
+Could you do both operations in O(1) time complexity?
+
+Example:
+
+LRUCache cache = new LRUCache( 2 /* capacity */ );
+
+cache.put(1, 1);
+cache.put(2, 2);
+cache.get(1);       // returns 1
+cache.put(3, 3);    // evicts key 2
+cache.get(2);       // returns -1 (not found)
+cache.put(4, 4);    // evicts key 1
+cache.get(1);       // returns -1 (not found)
+cache.get(3);       // returns 3
+cache.get(4);       // returns 4
+=end
 
 class Node
-  attr_accessor :value, :next, :prev
-  def initialize(value)
+  attr_accessor :key, :value, :next_node, :prev_node
+
+  def initialize(key, value)
+    @key = key
     @value = value
-    @next = nil
-    @prev = nil
-  end
-
-  def add_next(next_node)
-    @next = next_node
-    next_node.prev = self unless next_node.nil?
-    
-    true
-  end
-
-  def add_prev(prev_node)
-    @prev = prev_node
-    prev_node.next = self unless prev_node.nil?
-
-    true
-  end
-
-  def remove_prev
-    add_prev(nil)
-  end
-
-  def remove_next
-    add_next(nil)
+    @next_node = nil
+    @prev_node = nil
   end
 end
 
 class LRUCache
-  attr_accessor :capacity, :head, :tail, :keys
+  attr_accessor :nodes, :capacity
 
   def initialize(capacity)
+    @nodes = {}
     @capacity = capacity
+    @head = nil
     @tail = nil
-    @keys = {}
   end
 
   def get(key)
-    node = keys[key]
-    return -1 if node.nil?
-
-    most_recently_used!(node)
-
-    node.value
   end
 
   def put(key, value)
-    node = Node.new(value)
-    keys[key] = node
+    node = Node.new(key, value)
+    nodes[key] = node
 
-    enqueue(node)
+    prune if nodes.length > capacity
 
-    dequeue if count > capacity
+    @head = node if @head.nil?
+    @tail = node if @tail.nil?
   end
 
-  def count
-    return 0 if tail.nil?
+  def prune
+    return if @head.nil?
+
+    node = @head
+    prev_node = node.prev_node
     
-    node = tail
-    num = 1
-    num += 1 until (node = node.next).nil?
-    num
+    node.prev_node = nil
+    @nodes.delete(node.key)
+
+    @head = prev_node
   end
-
-  def head
-    return nil if tail.nil?
-
-    node = tail
-    node = node.next until node.next.nil?
-    node
-  end
-
-  private
-
-    def enqueue(node)
-      @tail.add_prev(node) unless tail.nil?
-      @tail = node
-    end
-
-    def dequeue
-      head = head()
-      head.remove_prev unless head.nil?
-    end
-
-    def most_recently_used!(node)
-      return if tail.nil?
-
-      next_node = node.next
-      prev_node = node.prev
-
-      node.remove_prev
-      node.remove_next
-
-      next_node.add_prev(prev_node) unless next_node.nil?
-      prev_node.add_next(next_node) unless prev_node.nil?
-
-      enqueue(node)
-    end
 end
 
-# Your LRUCache object will be instantiated and called as such:
-# obj = LRUCache.new(capacity)
-# param_1 = obj.get(key)
-# obj.put(key, value)
+
 
 describe "LRUCache" do
-  it "works" do
+  it "prunes when #put is used at capacity" do
     cache = LRUCache.new(2)
-    cache.put(1, 1);                # [(1, 1)]
-    assert_equal(1, cache.count)
-    cache.put(2, 2);                # [(2, 2), (1, 1)]
-    assert_equal(2, cache.count)
-    assert_equal(1, cache.get(1));  # [(1, 1), (2, 2)]
-    cache.put(3, 3);                # [(3, 3), (1, 1)]
-    assert_equal(-1, cache.get(2)); # [(3, 3), (1, 1)]
-    cache.put(4, 4);                # [(4, 4), (3, 3)]
-    assert_equal(-1, cache.get(1)); # [(4, 4), (3, 3)]
-    assert_equal(3, cache.get(3));  # [(3, 3), (4, 4)]
-    assert_equal(4, cache.get(4));  # [(4, 4), (3, 3)]
+    cache.put(1, 1)
+    assert_equal([1], cache.nodes.values.map(&:value))
+
+    cache.put(2, 2)
+    assert_equal([1, 2], cache.nodes.values.map(&:value).sort)
+
+    cache.put(3, 3)
+    assert_equal([2, 3], cache.nodes.values.map(&:value).sort)
   end
 end
