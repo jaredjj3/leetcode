@@ -4,6 +4,7 @@ require "nokogiri"
 def skeleton(method_name)
 <<-RUBY.freeze
 require "minitest/autorun"
+require "byebug"
 
 # PROMPT
 =begin
@@ -23,7 +24,17 @@ end
 
 task :gen do
   method_name = ENV.fetch("METHOD_NAME")
-  File.open("#{method_name}.rb", "w") { |file| file.write(skeleton(method_name)) }
+  filename = "#{method_name}.rb"
+  
+  if File.exists?(filename)
+    puts "'#{filename}' exists, continue? (y/n)"
+    if STDIN.gets.chomp.downcase.to_sym == :y
+      puts "creating #{filename}"
+      File.open("#{method_name}.rb", "w") { |file| file.write(skeleton(method_name)) }
+    else
+      puts "aborted!"
+    end
+  end
 end
 
 task :test do
