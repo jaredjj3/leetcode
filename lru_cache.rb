@@ -35,10 +35,30 @@ class Node
     @next_node = nil
     @prev_node = nil
   end
+
+  def add_next(node)
+    self.next_node = node
+    node.prev_node = self
+  end
+
+  def add_prev(node)
+    self.prev_node = node
+    node.next_node = self
+  end
+
+  def remove_next
+    next_node.prev_node = nil
+    self.next_node = nil
+  end
+
+  def remove_prev
+    prev_node.next_node = nil
+    self.prev_node = nil
+  end
 end
 
 class LRUCache
-  attr_accessor :nodes, :capacity
+  attr_accessor :nodes, :capacity, :head, :tail
 
   def initialize(capacity)
     @nodes = {}
@@ -53,38 +73,65 @@ class LRUCache
   def put(key, value)
     node = Node.new(key, value)
     nodes[key] = node
-
-    prune if nodes.length > capacity
-
-    @head = node if @head.nil?
-    @tail = node if @tail.nil?
+    enqueue(node)
+    pop if nodes.length > capacity
   end
 
-  def prune
-    return if @head.nil?
+  private
 
-    node = @head
-    prev_node = node.prev_node
-    
-    node.prev_node = nil
-    @nodes.delete(node.key)
+    def enqueue(node)
+      if @head.nil?
+        @head = node
+        @tail = node
+      else
+        old_tail = @tail
+        new_tail = node
+        old_tail.add_prev(node)
+        @tail = node
+      end
+    end
 
-    @head = prev_node
-  end
+    def pop
+      return if @head.nil?
+      new_head = @head.prev_node
+      old_head = @head
+
+      nodes.delete(old_head.key)
+
+      @head = new_head
+    end
 end
 
 
 
 describe "LRUCache" do
+  def assert_head(value, cache)
+    assert_equal(value, cache.head.value, "Expected head to be #{value}")
+  end
+
+  def assert_tail(value, cache)
+    assert_equal(value, cache.tail.value, "Expected tail to be #{value}")
+  end
+
   it "prunes when #put is used at capacity" do
     cache = LRUCache.new(2)
     cache.put(1, 1)
     assert_equal([1], cache.nodes.values.map(&:value))
+    assert_head(1, cache)
+    assert_tail(1, cache)
 
     cache.put(2, 2)
-    assert_equal([1, 2], cache.nodes.values.map(&:value).sort)
+    assert_equal([1, 2], cache.nodes.values.map(&:value))
+    assert_head(1, cache)
+    assert_tail(2, cache)
 
     cache.put(3, 3)
-    assert_equal([2, 3], cache.nodes.values.map(&:value).sort)
+    assert_equal([2, 3], cache.nodes.values.map(&:value))
+
+    cache.put(4, 4)
+    assert_equal([3, 4], cache.nodes.values.map(&:value))
+
+    cache.put(5, 5)
+    assert_equal([4, 5], cache.nodes.values.map(&:value))
   end
 end
