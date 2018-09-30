@@ -12,19 +12,20 @@ Input: [1,8,6,2,5,4,8,3,7]
 Output: 49
 =end
 
-Height = Struct.new(:height, :ndx)
-
-# Naive solution: O(n**2) time, O(n**2) space
 def max_area(heights)
-  height_structs = heights.map.with_index { |height, ndx| Height.new(height, ndx) }
+  areas = []
 
-  areas = heights.flat_map.with_index do |height, ndx|
-    structs = height_structs.dup
-    structs.delete_at(ndx)
-    structs.map do |struct|
-      length = (struct.ndx - ndx).abs
-      container_height = [struct.height, height].min.abs
-      length * container_height
+  left_ndx = 0
+  right_ndx = heights.size - 1
+  while left_ndx < right_ndx
+    width = right_ndx - left_ndx
+    height = [heights[left_ndx], heights[right_ndx]].min
+    areas << width * height
+
+    if heights[left_ndx] <= heights[right_ndx]
+      left_ndx += 1
+    else
+      right_ndx -= 1
     end
   end
 
