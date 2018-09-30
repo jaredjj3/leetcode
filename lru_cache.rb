@@ -68,13 +68,17 @@ class LRUCache
   end
 
   def get(key)
+    node = nodes[key]
+    return node if node.nil?
+
+
   end
 
   def put(key, value)
     node = Node.new(key, value)
     nodes[key] = node
     enqueue(node)
-    pop if nodes.length > capacity
+    dequeue if nodes.length > capacity
   end
 
   private
@@ -91,7 +95,7 @@ class LRUCache
       end
     end
 
-    def pop
+    def dequeue
       return if @head.nil?
       new_head = @head.prev_node
       old_head = @head
@@ -113,25 +117,40 @@ describe "LRUCache" do
     assert_equal(value, cache.tail.value, "Expected tail to be #{value}")
   end
 
-  it "prunes when #put is used at capacity" do
-    cache = LRUCache.new(2)
-    cache.put(1, 1)
-    assert_equal([1], cache.nodes.values.map(&:value))
-    assert_head(1, cache)
-    assert_tail(1, cache)
+  describe "#put" do
+    it "dequeues when used at capacity" do
+      cache = LRUCache.new(2)
+      cache.put(1, 1)
+      assert_equal([1], cache.nodes.values.map(&:value))
+      assert_head(1, cache)
+      assert_tail(1, cache)
 
-    cache.put(2, 2)
-    assert_equal([1, 2], cache.nodes.values.map(&:value))
-    assert_head(1, cache)
-    assert_tail(2, cache)
+      cache.put(2, 2)
+      assert_equal([1, 2], cache.nodes.values.map(&:value))
+      assert_head(1, cache)
+      assert_tail(2, cache)
 
-    cache.put(3, 3)
-    assert_equal([2, 3], cache.nodes.values.map(&:value))
+      cache.put(3, 3)
+      assert_equal([2, 3], cache.nodes.values.map(&:value))
 
-    cache.put(4, 4)
-    assert_equal([3, 4], cache.nodes.values.map(&:value))
+      cache.put(4, 4)
+      assert_equal([3, 4], cache.nodes.values.map(&:value))
 
-    cache.put(5, 5)
-    assert_equal([4, 5], cache.nodes.values.map(&:value))
+      cache.put(5, 5)
+      assert_equal([4, 5], cache.nodes.values.map(&:value))
+    end
+  end
+
+  describe "#get" do
+    it "returns nil when a key does not exist in the cache" do
+      cache = LRUCache.new(1)
+      assert_nil(cache.get(1))
+
+      cache.put(1, 1)
+      assert_nil(cache.get(2))
+
+      cache.put(2, 2)
+      assert_nil(cache.get(1))
+    end
   end
 end
