@@ -28,13 +28,10 @@ task :gen do
   
   if File.exists?(filename)
     puts "'#{filename}' exists, continue? (y/n)"
-    if STDIN.gets.chomp.downcase.to_sym == :y
-      puts "creating #{filename}"
-      File.open("#{method_name}.rb", "w") { |file| file.write(skeleton(method_name)) }
-    else
-      puts "aborted!"
-    end
+    return unless STDIN.gets.chomp.downcase.to_sym == :y
   end
+
+  File.open("#{method_name}.rb", "w") { |file| file.write(skeleton(method_name)) }
 end
 
 task :test do
