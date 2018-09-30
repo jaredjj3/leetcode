@@ -24,8 +24,14 @@ Output: "One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Th
 
 =end
 
+LESS_THAN_20 = %W(One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve Thirteen Fourteen Fifteen Sixteen Seventeen Eighteen Nineteen).freeze
+TENS = %W(Ten Twenty Thirty Forty Fifty Sixty Seventy Eighty Ninety).freeze
+THOUSANDS = %W(Thousand Million Billion)
+
 def number_to_words(number)
 end
+
+def 
 
 describe "#number_to_words" do
   it "solves the problem prompt" do
