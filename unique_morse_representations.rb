@@ -32,11 +32,21 @@ Each words[i] will have length in range [1, 12].
 words[i] will only consist of lowercase letters.
 =end
 
-def unique_more_representations
+require "set"
+
+MORSE_ALPHABET = [".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."].freeze
+MORSE_BY_LETTER = ("a".."z").to_a.zip(MORSE_ALPHABET).to_h.freeze
+
+def unique_morse_representations(words)
+  morse = words.reduce(Set.new) do |seen, word|
+    seen << word.chars.map { |char| MORSE_BY_LETTER.fetch(char) }.join
+  end
+
+  morse.count
 end
 
-describe "#unique_more_representations" do
+describe "#unique_morse_representations" do
   it "solves the problem prompt" do
-
+    assert_equal(2, unique_morse_representations(["gin", "zen", "gig", "msg"]))
   end
 end
