@@ -39,11 +39,30 @@ for (int i = 0; i < len; i++) {
 }
 =end
 
-require "set"
+# require "set"
 
+# # O(n) time complexity, O(n) space
+# def remove_duplicates(nums)
+#   nums.select!(&Set.new.method(:add?))
+#   nums.size
+# end
+
+# Let n be the number of numbers in +nums+
 # O(n) time complexity, O(1) space
 def remove_duplicates(nums)
-  nums.select!(&Set.new.method(:add?))
+  ndx = 1
+
+  while ndx < nums.size
+    prev = nums[ndx - 1]
+    curr = nums[ndx]
+
+    if prev == curr
+      nums.delete_at(ndx)
+    else
+      ndx += 1
+    end
+  end
+
   nums.size
 end
 
