@@ -1,6 +1,3 @@
-require "open-uri"
-require "nokogiri"
-
 def skeleton(method_name)
 <<-RUBY.freeze
 require "minitest/autorun"
