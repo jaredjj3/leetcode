@@ -20,7 +20,7 @@ RUBY
 end
 
 task :gen do
-  method_name = ENV.fetch("METHOD_NAME")
+  method_name = ENV.fetch("NAME")
   filename = "#{method_name}.rb"
   
   if File.exists?(filename)
@@ -32,6 +32,6 @@ task :gen do
 end
 
 task :test do
-  method_name = ENV.fetch("METHOD_NAME")
+  method_name = ENV.fetch("NAME")
   system("ruby #{method_name}.rb")
 end
