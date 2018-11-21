@@ -46,3 +46,4 @@ methods:
   - merge_trees
   - merge
   - kth_to_last
+  - plus_one
