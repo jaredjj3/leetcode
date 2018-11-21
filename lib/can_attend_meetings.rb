@@ -24,11 +24,12 @@ class Interval
   end
 end
 
-def can_attend_meetings(intervals)
+def can_attend_meetings(meetings)
+  meetings.sort_by(&:start).each_cons(2).all? { |(m1, m2)| m2.start >= m1.end }
 end
 
 describe "#can_attend_meetings" do
-  it "returns true if no intervals overlap" do 
+  it "returns true if no intervals overlap" do
     assert(can_attend_meetings([Interval.new(0, 2), Interval.new(3, 4)]))
     assert(can_attend_meetings([Interval.new(0, 2), Interval.new(3, 4), Interval.new(5, 6)]))
   end
