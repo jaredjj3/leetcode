@@ -50,3 +50,4 @@ methods:
   - length_of_last_word
   - merge_intervals
   - can_attend_meetings
+  - count_substrings
