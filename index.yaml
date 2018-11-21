@@ -47,3 +47,4 @@ methods:
   - merge
   - kth_to_last
   - plus_one
+  - length_of_last_word
