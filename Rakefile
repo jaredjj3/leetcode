@@ -23,11 +23,25 @@ end
 
 task :sync_index do
   index = YAML.load(File.read("index.yaml"))
-  
-  index.fetch("methods").each do |method_name|
-    path = File.join("lib", "#{method_name}.rb")
-    next if File.exists?(path)
-    File.open(path, "w") { |file| file.write(skeleton(method_name)) }
+
+  lib = Dir["lib/*"].to_set
+  path_by_method = index.fetch("methods").each.with_object({}) do |method, path_by_method|
+    path_by_method[method] = File.join("lib", "#{method}.rb")
+  end
+
+  # create missing method files in lib
+  path_by_method.each do |method, path|
+    next if lib.include?(path)
+    File.open(path, "w") { |file| file.write(skeleton(method)) }
+    puts "created #{path}"
+  end
+
+  # destroy extra method files in lib
+  (lib - path_by_method.values).each do |path|
+    if File.exist?(path)
+      File.delete(path)
+      puts "deleted #{path}"
+    end
   end
 end
 
