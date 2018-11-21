@@ -31,7 +31,12 @@ task :gen do
   File.open("#{method_name}.rb", "w") { |file| file.write(skeleton(method_name)) }
 end
 
-task :test do
-  method_name = ENV.fetch("NAME")
-  system("ruby #{method_name}.rb")
+task :test, :paths do |t, args|
+  if Array === args.paths
+    args.paths.each do |path|
+      cmd = "ruby #{path}"
+      puts cmd
+      system(cmd)
+    end
+  end
 end
