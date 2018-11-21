@@ -1,3 +1,5 @@
+require "yaml"
+
 def skeleton(method_name)
 <<-RUBY.freeze
 require "minitest/autorun"
@@ -19,16 +21,14 @@ end
 RUBY
 end
 
-task :gen do
-  method_name = ENV.fetch("NAME")
-  filename = "#{method_name}.rb"
+task :sync_index do
+  index = YAML.load(File.read("index.yaml"))
   
-  if File.exists?(filename)
-    puts "'#{filename}' exists, continue? (y/n)"
-    return unless STDIN.gets.chomp.downcase.to_sym == :y
+  index.fetch("methods").each do |method_name|
+    path = File.join("lib", "#{method_name}.rb")
+    next if File.exists?(path)
+    File.open(path, "w") { |file| file.write(skeleton(method_name)) }
   end
-
-  File.open("#{method_name}.rb", "w") { |file| file.write(skeleton(method_name)) }
 end
 
 task :test, :paths do |t, args|
