@@ -15,7 +15,7 @@ end
 
 describe "##{method_name}" do
   it "solves the problem prompt" do
-
+    flunk
   end
 end
 RUBY

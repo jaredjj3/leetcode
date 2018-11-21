@@ -45,3 +45,4 @@ methods:
   - max_profit
   - merge_trees
   - merge
+  - kth_to_last
