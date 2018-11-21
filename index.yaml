@@ -48,3 +48,4 @@ methods:
   - kth_to_last
   - plus_one
   - length_of_last_word
+  - merge_intervals
