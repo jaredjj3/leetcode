@@ -49,3 +49,4 @@ methods:
   - plus_one
   - length_of_last_word
   - merge_intervals
+  - can_attend_meetings
