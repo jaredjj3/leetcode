@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "byebug"
+require "set"
 
 # PROMPT
 =begin
@@ -16,6 +17,19 @@ class Node
 end
 
 def remove_dups(head)
+  seen = Set.new
+  node = Node.new(nil) # dummy
+  node.next = head
+
+  until node.nil?
+    if !node.next.nil? && seen.add?(node.next.data).nil?
+      node.next = node.next.next
+    else
+      node = node.next
+    end
+  end
+
+  head
 end
 
 def to_list(arr)
