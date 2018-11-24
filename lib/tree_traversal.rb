@@ -33,6 +33,19 @@ def post_order_traversal(root)
   post_order_traversal(root.children[0]) + post_order_traversal(root.children[-1]) + [root]
 end
 
+def bfs(root)
+  nodes = [root]
+  visited = []
+
+  until nodes.empty?
+    node = nodes.shift
+    nodes += node.children
+    visited << node
+  end
+
+  visited
+end
+
 def tree
 #     a
 #    /  \
@@ -74,5 +87,13 @@ describe "#post_order_traversal" do
     a, b, c, d, e, f, g = tree
 
     assert_equal([d, e, b, f, g, c, a].map(&:data), post_order_traversal(a).map(&:data))
+  end
+end
+
+describe "#bfs" do
+  it "iterates through the tree in a bfs manner" do
+    a, b, c, d, e,f, g = tree
+
+    assert_equal([a, b, c, d, e, f, g].map(&:data), bfs(a).map(&:data))
   end
 end
