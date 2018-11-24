@@ -52,3 +52,4 @@ methods:
   - can_attend_meetings
   - count_substrings
   - is_palindrome2
+  - tree_traversal
