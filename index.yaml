@@ -53,3 +53,4 @@ methods:
   - count_substrings
   - is_palindrome2
   - tree_traversal
+  - max_area_of_island

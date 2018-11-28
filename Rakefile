@@ -31,7 +31,7 @@ task :sync_index do
 
   # create missing method files in lib
   path_by_method.each do |method, path|
-    next if lib.include?(path)
+    next if lib.include?(path) || method.nil?
     File.open(path, "w") { |file| file.write(skeleton(method)) }
     puts "created #{path}"
   end
