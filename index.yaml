@@ -54,3 +54,4 @@ methods:
   - is_palindrome2
   - tree_traversal
   - max_area_of_island
+  - add_binary
