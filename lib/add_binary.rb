@@ -18,13 +18,17 @@ Output: "10101"
 =end
 
 def add_binary(a, b)
-  ndx = [a.size, b.size].max - 1
+  size = [a.size, b.size].max
+  pad_a = "%0#{size}d" % a
+  pad_b = "%0#{size}d" % b
+  ndx = size - 1
+
   res = ""
   carry_one = false
 
   while ndx >= 0
-    ai = a[ndx]
-    bi = b[ndx]
+    ai = pad_a[ndx]
+    bi = pad_b[ndx]
 
     if ai.nil?
       res << bi
@@ -69,6 +73,7 @@ describe "#add_binary" do
 
   it "solves the problem prompt" do
     assert_equal("10101", add_binary("1010", "1011"))
+    assert_equal("100", add_binary("11", "1"))
   end
 
   it "solves adding 1..100 to itself" do
