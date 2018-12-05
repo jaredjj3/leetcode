@@ -26,7 +26,24 @@ Note: The length of each dimension in the given grid does not exceed 50.
 =end
 
 def max_area_of_island(grid)
-  1
+  max = 0
+    grid.each.with_index do |row, ii|
+      row.each.with_index do |el, jj|
+        max = [max, explore(grid, ii, jj)].max if el == 1
+      end
+    end
+  max
+end
+
+def explore(grid, ii, jj)
+  return 0 if ii < 0 || jj < 0
+  return 0 if (row = grid[ii]).nil?
+  return 0 if (el = row[jj]).nil?
+  return 0 if el == 0
+
+  row[jj] = 0
+
+  1 + explore(grid, ii - 1, jj) + explore(grid, ii, jj - 1) + explore(grid, ii + 1, jj) + explore(grid, ii, jj + 1)
 end
 
 describe "#max_area_of_island" do
