@@ -55,3 +55,5 @@ methods:
   - tree_traversal
   - max_area_of_island
   - add_binary
+  - bst_iterator
+  - check_contiguous
