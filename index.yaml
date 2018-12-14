@@ -57,3 +57,4 @@ methods:
   - add_binary
   - bst_iterator
   - check_contiguous
+  - check_dup_inputs
