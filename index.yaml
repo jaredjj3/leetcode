@@ -59,3 +59,4 @@ methods:
   - check_contiguous
   - check_dup_inputs
   - group_anagrams
+  - fizz_buzz
