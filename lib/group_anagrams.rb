@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "byebug"
+require "set"
 
 # PROMPT
 =begin
@@ -24,7 +25,32 @@ def group_anagrams
 end
 
 describe "#group_anagrams" do
-  it "solves the problem prompt" do
-    flunk
+  def assert_group_anagrams(exp, arr)
+    assert_equal(
+      exp.map(&:to_set).to_set,
+      group_anagrams(arr).map(&:to_set).to_set
+    )
+  end
+
+  it "groups the same strings together" do
+    assert_group_anagrams(
+      [
+        %W(a a a),
+        %W(b b b),
+        %W(c c c)
+      ],
+      %W(a b c a b c a b c)
+    )
+  end
+
+  it "groups more complex examples" do
+    assert_group_anagrams(
+      [
+        ["ate","eat","tea"],
+        ["nat","tan"],
+        ["bat"]
+      ],
+      ["eat", "tea", "tan", "ate", "nat", "bat"]
+    )
   end
 end
