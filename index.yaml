@@ -58,3 +58,4 @@ methods:
   - bst_iterator
   - check_contiguous
   - check_dup_inputs
+  - group_anagrams
