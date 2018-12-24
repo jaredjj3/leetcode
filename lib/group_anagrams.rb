@@ -21,8 +21,17 @@ All inputs will be in lowercase.
 The order of your output does not matter.
 =end
 
-def group_anagrams
+def group_anagrams(arr)
+  arr.group_by { |str| str.split("").sort }.values
 end
+
+# def group_anagrams(arr)
+#   arr.group_by { |str| freq_hash(str.chars) }.values
+# end
+
+# def freq_hash(arr)
+#   arr.each.with_object(Hash.new { |h, k| h[k] = 0 }) { |el, hash| hash[el] += 1 }
+# end
 
 describe "#group_anagrams" do
   def assert_group_anagrams(exp, arr)
