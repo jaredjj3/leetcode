@@ -61,3 +61,4 @@ methods:
   - group_anagrams
   - fizz_buzz
   - number_of_arithmetic_slices
+  - trim_bst
