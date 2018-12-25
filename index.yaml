@@ -62,3 +62,4 @@ methods:
   - fizz_buzz
   - number_of_arithmetic_slices
   - trim_bst
+  - maximum_swap
