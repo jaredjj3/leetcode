@@ -21,23 +21,25 @@ end
 RUBY
 end
 
+def lib_path(method_name)
+  File.join("lib", "#{method_name}.rb")
+end
+
 task :sync_index do
+  # fetch method names from index.yaml
   index = YAML.load(File.read("index.yaml"))
+  methods = index.fetch("methods")
 
-  lib = Dir["lib/*"].to_set
-  path_by_method = index.fetch("methods").each.with_object({}) do |method, path_by_method|
-    path_by_method[method] = File.join("lib", "#{method}.rb")
-  end
-
-  # create missing method files in lib
-  path_by_method.each do |method, path|
-    next if lib.include?(path) || method.nil?
+  # create missing method files in lib dir
+  methods.each do |method|
+    path = lib_path(method)
+    next if File.exist?(path) || method.nil?
     File.open(path, "w") { |file| file.write(skeleton(method)) }
     puts "created #{path}"
   end
 
-  # destroy extra method files in lib
-  (lib - path_by_method.values).each do |path|
+  # destroy extra method files in lib dir
+  (Dir["lib/*"] - methods.map(&method(:lib_path))).each do |path|
     if File.exist?(path)
       File.delete(path)
       puts "deleted #{path}"
@@ -46,11 +48,9 @@ task :sync_index do
 end
 
 task :test, :paths do |t, args|
-  if Array === args.paths
-    args.paths.each do |path|
-      cmd = "ruby #{path}"
-      puts cmd
-      system(cmd)
-    end
+  args.paths.each do |path|
+    cmd = "ruby #{path}"
+    puts cmd
+    system(cmd)
   end
 end
