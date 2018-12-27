@@ -64,3 +64,4 @@ methods:
   - trim_bst
   - maximum_swap
   - valid_utf8
+  - num_decodings
