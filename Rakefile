@@ -48,7 +48,9 @@ task :sync_index do
 end
 
 task :test, :paths do |t, args|
-  args.paths.each do |path|
+  paths = args.paths || [ENV.fetch("TEST")]
+
+  paths.each do |path|
     cmd = "ruby #{path}"
     puts cmd
     system(cmd)
