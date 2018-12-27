@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "byebug"
+require "set"
 
 # PROMPT
 =begin
@@ -23,7 +24,50 @@ Output: 3
 Explanation: It could be decoded as "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6).
 =end
 
-def num_decodings
+VALID_TOKEN_RANGE = (1..26)
+
+def num_decodings(str)
+  base = base_decoding(str)
+  return 0 if base.empty? || base.any? { |char| char == "0" }
+  1 + decodings(base).size
+end
+
+def base_decoding(str)
+  str.chars.each.with_object([]).with_index do |(char, base), ndx|
+    next if char == "0" && ndx > 0
+
+    if (char == "1" || char == "2") && char[ndx + 1] == "0"
+      base << "#{char}0"
+    else
+      base << char
+    end
+  end
+end
+
+def decodings(arr)
+  set = Set.new
+
+  arr.each_cons(2).with_index do |(char1, char2), ndx|
+    char = char1 + char2
+    if VALID_TOKEN_RANGE.include?(char.to_i)
+      spliced = splice(arr, char, ndx)
+      set.add(spliced)
+      set = set | decodings(spliced)
+    end
+  end
+
+  set
+end
+
+def splice(arr, str, ndx)
+  raise ArgumentError unless str.size == 2
+  raise ArgumentError unless ndx >= 0
+  raise ArgumentError unless ndx < arr.size - 1
+
+  arr.dup.tap do |dup_arr|
+    dup_arr[ndx] = str
+    dup_arr.delete_at(ndx + 1)
+  end
 end
 
 describe "#num_decodings" do
