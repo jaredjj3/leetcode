@@ -31,8 +31,6 @@ THOUSANDS = %W(Thousand Million Billion)
 def number_to_words(number)
 end
 
-def 
-
 describe "#number_to_words" do
   it "solves the problem prompt" do
     assert_equal("One Hundred Twenty Three", number_to_words(123))
