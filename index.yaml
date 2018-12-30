@@ -70,3 +70,4 @@ methods:
   - average_of_levels
   - flip_game
   - generate_parentheses
+  - intersection
