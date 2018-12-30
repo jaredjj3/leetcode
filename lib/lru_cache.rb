@@ -27,222 +27,199 @@ cache.get(4);       // returns 4
 =end
 
 class Node
-  attr_accessor :key, :value, :next_node, :prev_node
+  attr_accessor :key, :value, :next, :prev
 
   def initialize(key, value)
     @key = key
     @value = value
-    @next_node = nil
-    @prev_node = nil
-  end
-
-  def add_next(node)
-    self.next_node = node
-    node.prev_node = self unless node.nil?
-  end
-
-  def add_prev(node)
-    self.prev_node = node
-    node.next_node = self unless node.nil?
-  end
-
-  def remove_next
-    next_node.prev_node = nil unless next_node.nil?
-    self.next_node = nil
-  end
-
-  def remove_prev
-    prev_node.next_node = nil unless prev_node.nil?
-    self.prev_node = nil
+    @next = nil
+    @prev = nil
   end
 end
 
 class LRUCache
-  attr_accessor :nodes, :capacity, :head, :tail
+  attr_accessor :capacity, :nodes
 
   def initialize(capacity)
-    @nodes = {}
     @capacity = capacity
+    @nodes = {}
     @head = nil
-    @tail = nil
   end
 
   def get(key)
-    node = nodes[key]
+    node = @nodes[key]
     return -1 if node.nil?
-    
-    prev_node = node.prev_node
-    next_node = node.next_node
-
-    dequeue if node == @head
-
-    node.remove_next
-    node.remove_prev
-
-    prev_node.add_next(next_node) unless prev_node.nil?
-    next_node.add_prev(prev_node) unless next_node.nil?
-
-    enqueue(node)
-
+    requeue!(node)
     node.value
   end
 
   def put(key, value)
-    node = Node.new(key, value)
-    dequeue if values.length + (nodes.include?(key) ? 0 : 1)  > capacity
-    enqueue(node)
+    node = @nodes[key] || Node.new(key, value)
+    node.value = value
+
+    prev_node = node.prev
+    next_node = node.next
+    prev_node.next = next_node unless prev_node.nil?
+    next_node.prev = prev_node unless next_node.nil?
+
+    unless node == @head
+      node.next = @head
+      @head.prev = node unless @head.nil?
+      @head = node
+    end
+
+    node.prev = nil
+
+    @nodes[key] = node
+    trim! if @nodes.size > @capacity
   end
 
   def values
-    arr = []
-    node = @tail
+    nodes = []
+    node = @head
 
-    until node.nil?
-      arr << node.value
-      node = node.next_node
+    while node
+      nodes << node
+      node = node.next
     end
 
-    arr
+    nodes.map(&:value)
   end
 
   private
 
-    def enqueue(node)
-      nodes[node.key] = node
+    def tail
+      node = @head
+      return nil if node.nil?
+      node = node.next until node.next.nil?
+      node
+    end
 
-      if @head.nil?
-        @head = node
-        @tail = node
-      else
-        old_tail = @tail
-        new_tail = node
+    def trim!
+      probe = tail
 
-        old_tail.add_prev(new_tail)
-        new_tail.add_next(old_tail)
-        new_tail.remove_prev
+      unless probe.nil?
+        prev_node = probe.prev
+        probe.prev = nil
+        prev_node.next = nil unless prev_node.nil?
 
-        @tail = new_tail
+        @nodes.delete(probe.key)
       end
     end
 
-    def dequeue
-      return if @head.nil?
+    def requeue!(node)
+      prev_node = node.prev
+      next_node = node.next
+      prev_node.next = next_node unless prev_node.nil?
+      next_node.prev = prev_node unless next_node.nil?
 
-      new_head = @head.prev_node
-      old_head = @head
-
-      new_head.remove_next unless new_head.nil?
-
-      old_head.remove_prev
-      old_head.remove_next
-
-      nodes.delete(old_head.key)
-
-      @head = new_head
+      node.prev = nil
+      node.next = @head unless node == @head
+      @head.prev = node
+      @head = node
     end
 end
 
 describe "LRUCache" do
-  def assert_head(value, cache)
-    assert_equal(value, cache.head.value, "Expected head to be #{value}")
-  end
-
-  def assert_tail(value, cache)
-    assert_equal(value, cache.tail.value, "Expected tail to be #{value}")
-  end
-  
   it "solves the problem prompt" do
     cache = LRUCache.new(2)
 
+    assert_equal([], cache.values)
+
     cache.put(1, 1)
+    assert_equal([1], cache.values)
+
     cache.put(2, 2)
     assert_equal([2, 1], cache.values)
-    assert_head(1, cache)
-    assert_tail(2, cache)
 
     assert_equal(1, cache.get(1))
-    assert_head(2, cache)
-    assert_tail(1, cache)
+    assert_equal([1, 2], cache.values)
 
     cache.put(3, 3)
     assert_equal([3, 1], cache.values)
+
+    assert_equal(-1, cache.get(2))
+    assert_equal([3, 1], cache.values)
+
+    cache.put(4, 4)
+    assert_equal([4, 3], cache.values)
+
+    assert_equal(-1, cache.get(1))
+    assert_equal([4, 3], cache.values)
+
+    assert_equal(3, cache.get(3))
+    assert_equal([3, 4], cache.values)
+
+    assert_equal(4, cache.get(4))
+    assert_equal([4, 3], cache.values)
   end
 
-  it "solves the problem prompt" do
+  it "solves failing tests" do
+    cache = LRUCache.new(1)
+
+    cache.put(2, 1)
+    assert_equal([1], cache.values)
+
+    assert_equal(1, cache.get(2))
+
+    cache.put(3, 2)
+    assert_equal([2], cache.values)
+  end
+
+  it "solves failing tests" do
     cache = LRUCache.new(2)
 
     cache.put(2, 1)
     assert_equal([1], cache.values)
-    assert_head(1, cache)
-    assert_tail(1, cache)
 
-    cache.put(1, 1)
-    assert_equal([1, 1], cache.values)
-    assert_tail(1, cache)
-    assert_head(1, cache)
-    assert_equal([1, 2], cache.nodes.keys.sort)
-
-    cache.put(2, 3)
-    assert_equal([3, 1], cache.values)
-    assert_equal([1, 2], cache.nodes.keys.sort)
-    assert_head(1, cache)
-    assert_tail(3, cache)
-
-    cache.put(4, 1)
-    assert_equal([1, 3], cache.values)
-    assert_equal([2, 4], cache.nodes.keys.sort)
-
-    assert_equal(-1, cache.get(1))
-    assert_equal([1, 3], cache.values)
-    assert_equal(3, cache.get(2))
-  end
-
-  describe "#put" do
-    it "dequeues when used at capacity" do
-      cache = LRUCache.new(2)
-      cache.put(1, 1)
-      assert_equal([1], cache.values)
-      assert_head(1, cache)
-      assert_tail(1, cache)
-
-      cache.put(2, 2)
-      assert_equal([2, 1], cache.values)
-      assert_head(1, cache)
-      assert_tail(2, cache)
-
-      cache.put(3, 3)
-      assert_equal([3, 2], cache.values)
-
-      cache.put(4, 4)
-      assert_equal([4, 3], cache.values)
-
-      cache.put(5, 5)
-      assert_equal([5, 4], cache.values)
-    end
+    cache.put(2, 2)
+    assert_equal([2], cache.values)
   end
 
   describe "#get" do
-    it "returns -1 when a key does not exist in the cache" do
-      cache = LRUCache.new(1)
-      assert_equal(-1, cache.get(1))
-
-      cache.put(1, 1)
-      assert_equal(-1, cache.get(2))
-
-      cache.put(2, 2)
-      assert_equal(-1, cache.get(1))
+    it "returns -1 if the key does not exist" do
+      assert_equal(-1, LRUCache.new(1).get(1))
     end
 
-    it "moves the key-value pair to the tail" do
+    it "requeues the fetched node" do
+      cache = LRUCache.new(2)
+      
+      cache.put(1, 1)
+      cache.put(2, 2)
+
+      assert_equal([2, 1], cache.values)
+      
+      assert_equal(1, cache.get(1))
+
+      assert_equal([1, 2], cache.values)
+    end
+  end
+
+  describe "#put" do
+    it "enqueues nodes by least recently used" do
       cache = LRUCache.new(3)
 
       cache.put(1, 1)
+      assert_equal([1], cache.values)
+
       cache.put(2, 2)
+      assert_equal([2, 1], cache.values)
+      
       cache.put(3, 3)
       assert_equal([3, 2, 1], cache.values)
+    end
 
-      assert_equal(2, cache.get(2))
-      assert_equal([2, 3, 1], cache.values)
+    it "trims when capacity is reached" do
+      cache = LRUCache.new(2)
+
+      cache.put(1, 1)
+      assert_equal([1], cache.values)
+
+      cache.put(2, 2)
+      assert_equal([2, 1], cache.values)
+      
+      cache.put(3, 3)
+      assert_equal([3, 2], cache.values)
     end
   end
 end
