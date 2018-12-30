@@ -68,3 +68,4 @@ methods:
   - single_number
   - invert_tree
   - average_of_levels
+  - flip_game
