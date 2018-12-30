@@ -72,3 +72,4 @@ methods:
   - generate_parentheses
   - intersection
   - eratosthenes_sieve
+  - fib
