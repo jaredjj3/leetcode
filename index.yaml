@@ -71,3 +71,4 @@ methods:
   - flip_game
   - generate_parentheses
   - intersection
+  - eratosthenes_sieve
