@@ -20,6 +20,19 @@ Note: If there is no valid move, return an empty list [].
 =end
 
 def flip_game(str)
+  res = []
+  chars = str.chars
+
+  chars.each_cons(2).with_index do |(char1, char2), ndx|
+    if char1 == "+" && char2 == "+"
+      dup_chars = chars.dup
+      dup_chars[ndx] = "-"
+      dup_chars[ndx + 1] = "-"
+      res << dup_chars.join
+    end
+  end
+
+  res
 end
 
 describe "#flip_game" do
