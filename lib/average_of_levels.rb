@@ -18,7 +18,36 @@ Note:
 The range of node's value is in the range of 32-bit signed integer.
 =end
 
-def average_of_levels
+# Definition for a binary tree node.
+class TreeNode
+  attr_accessor :val, :left, :right
+  def initialize(val)
+    @val = val
+    @left, @right = nil, nil
+  end
+end
+
+def average_of_levels(root)
+  bfs(root) { |nodes| nodes.map(&:val).reduce(&:+) / nodes.size.to_f }
+end
+
+def bfs(root, &blk)
+  queue = []
+  res = []
+
+  queue << root unless root.nil?
+
+  until queue.empty?
+    nodes = []
+    nodes << queue.pop until queue.empty?
+    res << blk.call(nodes)
+    nodes.each do |node|
+      queue << node.left unless node.left.nil?
+      queue << node.right unless node.right.nil?
+    end
+  end
+
+  res
 end
 
 describe "#average_of_levels" do
