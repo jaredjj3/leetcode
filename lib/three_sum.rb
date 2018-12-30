@@ -24,32 +24,41 @@ A solution set is:
 require "set"
 
 def three_sum(nums)
-  triplets = Set.new
-  
+  triplets = []
   sorted = nums.sort
-  sorted[0...-2].each.with_index do |probe, ndx|
-    l_ndx = ndx + 1
+
+  p_ndx = 0
+  while p_ndx < sorted.size - 2
+    probe = sorted[p_ndx]
+
+    l_ndx = p_ndx + 1
     r_ndx = sorted.size - 1
-    
     while l_ndx < r_ndx
       left = sorted[l_ndx]
       right = sorted[r_ndx]
 
       sum = probe + left + right
 
-      if sum > 0
-        r_ndx -= 1
-      elsif sum < 0
+      if sum < 0
         l_ndx += 1
-      else
+      elsif sum > 0
+        r_ndx -= 1
+      else # sum == 0
         triplets << [probe, left, right]
-        l_ndx += 1
-        r_ndx -= 1
+
+        # increment l_ndx to next uniq number in sorted
+        l_ndx += 1 while sorted[l_ndx] == left && l_ndx < r_ndx
+
+        # decrement r_ndx to next uinq number in sorted
+        r_ndx -= 1 while sorted[r_ndx] == right && l_ndx < r_ndx
       end
     end
+
+    # increment p_ndx to next uniq number in sorted
+    p_ndx += 1 while sorted[p_ndx] == probe && p_ndx < sorted.size - 2
   end
 
-  triplets.to_a
+  triplets
 end
 
 describe "#three_sum" do
@@ -64,5 +73,13 @@ describe "#three_sum" do
     ]
 
     assert_equal(set_of_sorted_arr(triplets), set_of_sorted_arr(three_sum([-1, 0, 1, 2, -1, -4])))
+  end
+
+  it "solves failing tests" do
+    triplets = [
+      [-1, 0, 1]
+    ]
+
+    assert_equal(set_of_sorted_arr(triplets), set_of_sorted_arr(three_sum([1, -1, -1, 0])))
   end
 end
