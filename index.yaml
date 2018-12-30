@@ -66,3 +66,4 @@ methods:
   - valid_utf8
   - num_decodings
   - single_number
+  - invert_tree
