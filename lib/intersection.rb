@@ -19,7 +19,10 @@ Each element in the result must be unique.
 The result can be in any order.
 =end
 
-def intersection
+def intersection(nums1, nums2)
+  shorter, longer = nums1.size < nums2.size ? [nums1, nums2] : [nums2, nums1]
+  longer = longer.to_set
+  shorter.select { |el| longer.include?(el) }.uniq
 end
 
 describe "#intersection" do
