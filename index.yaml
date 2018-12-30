@@ -65,3 +65,4 @@ methods:
   - maximum_swap
   - valid_utf8
   - num_decodings
+  - single_number

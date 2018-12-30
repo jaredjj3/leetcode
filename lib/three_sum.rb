@@ -23,27 +23,31 @@ A solution set is:
 
 require "set"
 
-# NAIVE SOLUTION O(n**2) time, O(1) space
 def three_sum(nums)
   triplets = Set.new
+  
+  sorted = nums.sort
+  sorted[0...-2].each.with_index do |probe, ndx|
+    l_ndx = ndx + 1
+    r_ndx = sorted.size - 1
+    
+    while l_ndx < r_ndx
+      left = sorted[l_ndx]
+      right = sorted[r_ndx]
 
-  ndxes_by_num = nums.each.with_index.reduce(Hash.new { |h, k| h[k] = Set.new }) do |memo, (num, ndx)|
-    memo[num] << ndx
-    memo
-  end
+      sum = probe + left + right
 
-  nums.each.with_index do |num1, ndx1|
-    nums.each.with_index do |num2, ndx2|
-      next if ndx1 == ndx2
-      sum = num1 + num2
-      ndxes = ndxes_by_num.fetch(-sum, Set.new).dup
-      ndxes -= Set.new([ndx1, ndx2])
-      ndxes.each do |ndx3|
-        triplets << [num1, num2, nums[ndx3]].sort
+      if sum > 0
+        r_ndx -= 1
+      elsif sum < 0
+        l_ndx += 1
+      else
+        triplets << [probe, left, right]
+        l_ndx += 1
+        r_ndx -= 1
       end
     end
   end
-  
 
   triplets.to_a
 end
