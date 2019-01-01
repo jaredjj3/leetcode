@@ -75,3 +75,4 @@ methods:
   - fib
   - count_and_say
   - reverse_string
+  - remove_invalid_parentheses
