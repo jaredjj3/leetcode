@@ -27,96 +27,56 @@ cache.get(4);       // returns 4
 =end
 
 class Node
-  attr_accessor :key, :value, :next, :prev
+  attr_accessor :key, :value
 
   def initialize(key, value)
     @key = key
     @value = value
-    @next = nil
-    @prev = nil
   end
 end
 
 class LRUCache
-  attr_accessor :capacity, :nodes
+  attr_accessor :capacity, :map, :nodes
 
   def initialize(capacity)
+    @map = {}
+    @nodes = []
     @capacity = capacity
-    @nodes = {}
-    @head = nil
-  end
-
-  def get(key)
-    node = @nodes[key]
-    return -1 if node.nil?
-    requeue!(node)
-    node.value
-  end
-
-  def put(key, value)
-    node = @nodes[key] || Node.new(key, value)
-    node.value = value
-
-    prev_node = node.prev
-    next_node = node.next
-    prev_node.next = next_node unless prev_node.nil?
-    next_node.prev = prev_node unless next_node.nil?
-
-    unless node == @head
-      node.next = @head
-      @head.prev = node unless @head.nil?
-      @head = node
-    end
-
-    node.prev = nil
-
-    @nodes[key] = node
-    trim! if @nodes.size > @capacity
   end
 
   def values
-    nodes = []
-    node = @head
+    @nodes.map(&:value)
+  end
 
-    while node
-      nodes << node
-      node = node.next
+  def get(key)
+    node = @map[key]
+    if node.nil?
+      -1
+    else
+      requeue!(key)
+      node.value
     end
+  end
 
-    nodes.map(&:value)
+  def put(key, value)
+    @nodes.reject! { |n| n == @map[key] }
+    node = Node.new(key, value)
+    @map[key] = node
+    @nodes.unshift(node)
+    evict! if @nodes.size > capacity
   end
 
   private
 
-    def tail
-      node = @head
-      return nil if node.nil?
-      node = node.next until node.next.nil?
-      node
+    def evict!
+      node = @nodes.pop
+      map.delete(node.key)
     end
 
-    def trim!
-      probe = tail
-
-      unless probe.nil?
-        prev_node = probe.prev
-        probe.prev = nil
-        prev_node.next = nil unless prev_node.nil?
-
-        @nodes.delete(probe.key)
-      end
-    end
-
-    def requeue!(node)
-      prev_node = node.prev
-      next_node = node.next
-      prev_node.next = next_node unless prev_node.nil?
-      next_node.prev = prev_node unless next_node.nil?
-
-      node.prev = nil
-      node.next = @head unless node == @head
-      @head.prev = node
-      @head = node
+    def requeue!(key)
+      node = @map[key]
+      @nodes.reject! { |n| n == node }
+      @nodes.unshift(node)
     end
 end
 
