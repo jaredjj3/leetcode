@@ -74,3 +74,4 @@ methods:
   - eratosthenes_sieve
   - fib
   - count_and_say
+  - reverse_string
