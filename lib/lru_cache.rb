@@ -27,11 +27,13 @@ cache.get(4);       // returns 4
 =end
 
 class Node
-  attr_accessor :key, :value
+  attr_accessor :key, :value, :prev, :next
 
   def initialize(key, value)
     @key = key
     @value = value
+    @prev = nil
+    @next = nil
   end
 end
 
@@ -40,29 +42,34 @@ class LRUCache
 
   def initialize(capacity)
     @map = {}
-    @nodes = []
+    @head = nil
     @capacity = capacity
   end
 
   def values
-    @nodes.map(&:value)
+    values = []
+    curr = @head
+    
+    until curr.nil?
+      values.push(curr.value)
+      curr = curr.next
+    end
+    
+    values
   end
 
   def get(key)
     node = @map[key]
-    if node.nil?
-      -1
-    else
-      requeue!(key)
-      node.value
-    end
+    return -1 if node.nil?
+    requeue!(key)
+    node.value
   end
 
   def put(key, value)
-    @nodes.reject! { |n| n == @map[key] }
-    node = Node.new(key, value)
-    @map[key] = node
-    @nodes.unshift(node)
+    unless @map[key].nil?
+      @map[key]
+    end
+
     evict! if @nodes.size > capacity
   end
 
