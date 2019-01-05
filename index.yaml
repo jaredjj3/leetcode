@@ -77,3 +77,4 @@ methods:
   - reverse_string
   - remove_invalid_parentheses
   - multiply_strings
+  - convert

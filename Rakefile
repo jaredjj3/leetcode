@@ -52,6 +52,7 @@ task :test, :paths do |t, args|
 
   paths.each do |path|
     cmd = "ruby #{path}"
+    system("cls")
     puts cmd
     system(cmd)
   end

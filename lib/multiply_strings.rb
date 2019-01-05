@@ -22,6 +22,7 @@ You must not use any built-in BigInteger library or convert the inputs to intege
 =end
 
 def multiply_strings(n1, n2)
+  smaller, larger = [n1, n2].sort.map { |str| str.to_i.to_s(2) }
 end
 
 describe "#multiply_strings" do
