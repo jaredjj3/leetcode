@@ -17,10 +17,10 @@ Minimize the total number of operations.
 =end
 
 def move_zeroes(nums)
+  seen = 0
   ndx = 0
-  its = 0
 
-  while its < nums.length
+  while seen < nums.size
     if nums[ndx] == 0
       nums.delete_at(ndx)
       nums << 0
@@ -28,7 +28,7 @@ def move_zeroes(nums)
       ndx += 1
     end
 
-    its += 1
+    seen += 1
   end
 
   nums
