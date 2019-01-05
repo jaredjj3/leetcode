@@ -17,49 +17,20 @@ Input: a = "1010", b = "1011"
 Output: "10101"
 =end
 
-def add_binary(a, b)
-  size = [a.size, b.size].max
-  pad_a = "%0#{size}d" % a
-  pad_b = "%0#{size}d" % b
-  ndx = size - 1
+def add_binary(raw_a, raw_b)
+  a = raw_a.to_i(2)
+  b = raw_b.to_i(2)
 
-  res = ""
-  carry_one = false
+  sum = a ^ b
+  carry = a & b
 
-  while ndx >= 0
-    ai = pad_a[ndx]
-    bi = pad_b[ndx]
-
-    if ai.nil?
-      res << bi
-      carry_one = false
-    elsif bi.nil?
-      res << ai
-      carry_one = false
-    else
-      sum = ai.to_i + bi.to_i + (carry_one ? 1 : 0)
-      carry_one = false
-
-      if sum == 0
-        res << "0"
-      elsif sum == 1
-        res << "1"
-      elsif sum == 2
-        res << "0"
-        carry_one = true
-      else
-        # sum == 3
-        res << "1"
-        carry_one = true
-      end
-    end
-
-    ndx -= 1
+  until carry == 0
+    shifted = carry << 1
+    carry = sum & shifted
+    sum = sum ^ shifted
   end
 
-  res << "1" if carry_one
-
-  res.reverse
+  sum.to_s(2)
 end
 
 describe "#add_binary" do
