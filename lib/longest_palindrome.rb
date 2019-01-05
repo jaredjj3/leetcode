@@ -18,50 +18,35 @@ Output: "bb"
 
 def longest_palindrome(str)
   return "" if str.empty?
-  longest = str[0]
 
-  (str.length - 1).times do |ndx|
-    [ndx, ndx..(ndx + 1)].each do |root_indexer|
-      root = str[root_indexer]
-      next if root != root.reverse
+  left = 0
+  right = 0
 
-      indexer = root_indexer
-      indexer = next_indexer(indexer) while expansion_matches?(str, indexer)
-      longest = [str[indexer], longest].max_by(&:length)
+  str.chars.each_index do |ndx|
+    len = [
+      expand(str, ndx, ndx),
+      expand(str, ndx, ndx + 1)
+    ].max
+
+    if len > right - left
+      left = ndx - (len - 1) / 2
+      right = ndx + len / 2
     end
   end
 
-  puts
-
-  longest
+  str[left..right]
 end
 
-def fetch(arr, ndx)
-  ndx < 0 ? nil : arr[ndx]
-end
+def expand(str, l_ndx, r_ndx)
+  l = l_ndx
+  r = r_ndx
 
-def expansion_matches?(arr, indexer)
-  case indexer
-  when Range
-    range = indexer
-    left = fetch(arr, range.begin - 1)
-    right = fetch(arr, range.end + 1)
-    !left.nil? && left == right
-  when Integer
-    ndx = indexer
-    left = fetch(arr, ndx - 1)
-    right = fetch(arr, ndx + 1)
-    !left.nil? && left == right
+  while l >= 0 && r < str.size && str[l] == str[r]
+    l -= 1
+    r += 1
   end
-end
 
-def next_indexer(indexer, offset = 1)
-  case indexer
-  when Range
-    (indexer.begin - offset)..(indexer.end + offset)
-  when Integer
-    (indexer - offset)..(indexer + offset)
-  end
+  r - l - 1
 end
 
 describe "#longest_palindrome" do
@@ -70,5 +55,9 @@ describe "#longest_palindrome" do
     assert_equal("bb", longest_palindrome("cbbd"))
     assert_equal("bbabb", longest_palindrome("abbabb"))
     assert_equal("a", longest_palindrome("a"))
+  end
+
+  it "returns an empty string if str is empty?" do
+    assert_equal("", longest_palindrome(""))
   end
 end
