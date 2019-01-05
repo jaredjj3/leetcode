@@ -79,3 +79,4 @@ methods:
   - multiply_strings
   - convert
   - intersect
+  - subsets
