@@ -16,19 +16,16 @@ class Node
 end
 
 def in_order_traversal(root)
-  raise ArgumentError if root.children.size > 2 # assuming binary tree
   return [root] if root.children.none?
   in_order_traversal(root.children[0]) + [root] + in_order_traversal(root.children[-1])
 end
 
 def pre_order_traversal(root)
-  raise ArgumentError if root.children.size > 2 # assuming binary tree
   return [root] if root.children.none?
   [root] + pre_order_traversal(root.children[0]) + pre_order_traversal(root.children[-1])
 end
 
 def post_order_traversal(root)
-  raise ArgumentError if root.children.size > 2 # assuming binary tree
   return [root] if root.children.none?
   post_order_traversal(root.children[0]) + post_order_traversal(root.children[-1]) + [root]
 end
@@ -92,7 +89,7 @@ end
 
 describe "#bfs" do
   it "iterates through the tree in a bfs manner" do
-    a, b, c, d, e,f, g = tree
+    a, b, c, d, e, f, g = tree
 
     assert_equal([a, b, c, d, e, f, g].map(&:data), bfs(a).map(&:data))
   end

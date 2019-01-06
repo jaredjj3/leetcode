@@ -82,3 +82,4 @@ methods:
   - subsets
   - permute
   - combinations
+  - same_tree
