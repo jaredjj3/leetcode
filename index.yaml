@@ -83,3 +83,4 @@ methods:
   - permute
   - combinations
   - same_tree
+  - is_valid_bst
