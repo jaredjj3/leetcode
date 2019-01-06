@@ -84,3 +84,5 @@ methods:
   - combinations
   - same_tree
   - is_valid_bst
+  - binary_tree_paths
+  
