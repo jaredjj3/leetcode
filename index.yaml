@@ -87,3 +87,4 @@ methods:
   - binary_tree_paths
   - count_query
   - fib_iterative
+  - atoi
