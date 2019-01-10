@@ -88,3 +88,4 @@ methods:
   - count_query
   - fib_iterative
   - atoi
+  - divide
