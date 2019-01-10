@@ -48,8 +48,29 @@ Explanation: The number "-91283472332" is out of the range of a 32-bit signed in
 
 MIN = -2**31
 MAX = 2**31 - 1
+VALID = [*0..9].map(&:to_s).to_set.freeze
 
 def atoi(str)
+  buffer = []
+
+  str.each_char do |char|
+    if char == "+" || char == "-"
+      break if buffer.any?
+      buffer << char
+    elsif VALID.include?(char)
+      buffer << char
+    elsif char == " "
+      break if buffer.any?
+    else
+      return 0 if buffer.empty?
+      break
+    end
+  end
+
+  num = buffer.join("").to_i
+  num = [num, MAX].min
+  num = [num, MIN].max
+  num
 end
 
 describe "#atoi" do
@@ -75,13 +96,13 @@ describe "#atoi" do
   end
 
   it "handles multiple positive signs" do
-    assert_equal(42, atoi("++42"))
-    assert_equal(42, atoi("+++42"))
+    assert_equal(0, atoi("++42"))
+    assert_equal(0, atoi("+++42"))
   end
 
   it "handles multiple negative signs" do
-    assert_equal(42, atoi("--42"))
-    assert_equal(-42, atoi("-+42"))
+    assert_equal(0, atoi("--42"))
+    assert_equal(0, atoi("-+42"))
   end
 
   it "handles words after the number" do
@@ -98,5 +119,9 @@ describe "#atoi" do
 
   it "returns ::MAX if the string produces a number outside of a 32-bit signed integer" do
     assert_equal(MAX, atoi("444442222222222"))
+  end
+
+  it "handles numbers separated by white spaces" do
+    assert_equal(0, atoi("   +0 123"))
   end
 end
