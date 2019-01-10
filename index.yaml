@@ -86,3 +86,4 @@ methods:
   - is_valid_bst
   - binary_tree_paths
   - count_query
+  - fib_iterative
