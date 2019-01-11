@@ -89,3 +89,4 @@ methods:
   - fib_iterative
   - atoi
   - divide
+  - first_bad_version
