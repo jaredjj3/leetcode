@@ -93,3 +93,4 @@ methods:
   - find_kth_largest
   - max_profit_2
   - rotate
+  - contains_duplicate
