@@ -17,24 +17,36 @@ Note:
 You may assume k is always valid, 1 ≤ k ≤ array's length.
 =end
 
-def find_kth_largest(arr, k)
-  max = arr[0]
-  depth = 1
+# Naive solution
+# let n be the number of elements in +arr+
+# Time Complexity O(n log(n))
+# Space Complexity O(1)
+# def find_kth_largest(arr, k)
+#   arr.sort![-k]
+# end
 
-  arr[1..-1].each do |el|
-    if el > max
+def find_kth_largest(arr, k, lb = 0, rb = nil)
+  pivot = rand(lb...(rb || arr.size))
+  probe = arr.delete_at(pivot)
+  left, right = arr.partition { |el| el <= probe }
 
-    elsif el < max
-
-    end
+  next_arr = left + [probe] + right
+  m = pivot - lb + 1
+  if m == k
+    probe
+  elsif m > k
+    find_kth_largest(next_arr, k, lb, pivot - 1)
+  else # k_ndx > k
+    find_kth_largest(next_arr, k - m, pivot + 1, rb || arr.size)
   end
-
-  max
 end
 
 describe "#find_kth_largest" do
   it "solves the problem prompt" do
-    assert_equal(5, find_kth_largest([3,2,1,5,6,4], 2))
-    assert_equal(4, find_kth_largest([3,2,3,1,2,4,5,5,6], 4))
+    assert_equal(5, find_kth_largest([3, 2, 1, 5, 6, 4], 2))
+    assert_equal(4, find_kth_largest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4))
+    assert_equal(-1, find_kth_largest([-1, -1], 2))
+    assert_equal(3, find_kth_largest([3, 3, 3, 3, 3, 3, 3, 3, 3], 8))
+    assert_equal(1, find_kth_largest([2, 1], 2))
   end
 end
