@@ -94,3 +94,4 @@ methods:
   - max_profit_2
   - rotate
   - contains_duplicate
+  - valid_sudoku
