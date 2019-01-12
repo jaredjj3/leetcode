@@ -26,12 +26,17 @@ Try to come up as many solutions as you can, there are at least 3 different ways
 Could you do it in-place with O(1) extra space?
 =end
 
-def rotate(k)
+def rotate(arr, k)
+  (k % arr.size).times { arr.unshift(arr.pop) }
 end
 
 describe "#rotate" do
   it "solves the problem prompt" do
     arr = [*1..7]
-    arr.size.times { |k| assert_equal(arr.rotate(k), rotate(arr.dup, k)) }
+    (arr.size * 3).times do |k|
+      dup_arr = arr.dup
+      rotate(dup_arr, k)
+      assert_equal(arr.rotate(-k), dup_arr, "k: #{k}")
+    end
   end
 end
