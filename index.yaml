@@ -90,3 +90,4 @@ methods:
   - atoi
   - divide
   - first_bad_version
+  - find_kth_largest
