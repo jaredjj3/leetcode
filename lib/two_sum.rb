@@ -43,13 +43,17 @@ require "minitest/autorun"
 # @param {Integer} target
 # @return {Integer[]}
 def two_sum(nums, target)
-  nums.each.with_object({}).with_index do |(num, memo), ndx|
-    other_ndx = memo[target - num]
-    return [ndx, other_ndx].sort unless other_ndx.nil?
-    memo[num] = ndx
-  end
-
-  nil
+    memo = nums.each_index.with_object(Hash.new { |h, k| h[k] = [] }) { |ndx, hash| hash[nums[ndx]] << ndx }
+    nums.each.with_index do |num, ndx|
+        probe_target = target - num
+         
+        if memo.key?(probe_target)
+            other_ndx = memo[probe_target].detect { |o_ndx| o_ndx != ndx }
+            return [ndx, other_ndx] if other_ndx
+        end
+    end
+    
+    nil
 end
 
 describe "#two_sum" do
