@@ -30,6 +30,29 @@ Explanation: In this case, no transaction is done, i.e. max profit = 0.
 =end
 
 def max_profit(prices)
+  buy = nil
+  sell = nil
+  profit = 0
+
+  prices.each do |price|
+    if buy.nil?
+      buy = price
+    elsif price < buy && sell.nil?
+      buy = price
+    elsif sell.nil? && price > buy
+      sell = price
+    elsif buy && sell && price > sell
+      sell = price
+    elsif buy && sell && price < sell
+      profit += sell - buy
+      buy = price
+      sell = nil
+    end
+  end
+
+  profit += sell - buy if buy && sell
+
+  profit
 end
 
 describe "#max_profit_2" do
