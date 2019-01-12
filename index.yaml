@@ -92,3 +92,4 @@ methods:
   - first_bad_version
   - find_kth_largest
   - max_profit_2
+  - rotate
