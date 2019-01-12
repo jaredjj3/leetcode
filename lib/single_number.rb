@@ -19,19 +19,11 @@ Input: [4,1,2,1,2]
 Output: 4
 =end
 
-def single_number(arr)
-  key, val = freq_hash(arr).detect do |el, freq|
-    freq == 1
-  end
-
-  key
-end
-
-def freq_hash(arr)
-  hash = Hash.new { |h, k| h[k] = 0 }
-  arr.each.with_object(hash) do |el, hash|
-    hash[el] += 1
-  end
+# Time complexity O(n), space complexity O(1)
+def single_number(nums)
+  res = nums[0]
+  nums[1..-1].each { |n| res ^= n }
+  res
 end
 
 describe "#single_number" do
