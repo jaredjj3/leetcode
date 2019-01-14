@@ -29,6 +29,7 @@ class Heap
   end
 
   def insert(value)
+    @size += 1
   end
 
   private
@@ -93,8 +94,18 @@ describe "Heap" do
   end
 
   describe "#insert" do
-    it "adds nodes in a manner that maintains the heap property" do
+    it "increments #size by 1" do
+      heap = Heap.new
+      assert_equal(0, heap.size)
 
+      heap.insert(1)
+      assert_equal(1, heap.size)
+
+      heap.insert(1)
+      assert_equal(2, heap.size)
+
+      heap.insert(10)
+      assert_equal(3, heap.size)
     end
   end
 end
