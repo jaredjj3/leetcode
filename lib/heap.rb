@@ -11,16 +11,16 @@ http://interactivepython.org/courselib/static/pythonds/Trees/BinaryHeapImplement
 class Heap
   attr_reader :nodes, :size
 
-  def self.left(index, nodes)
-    nodes[2 * index]
+  def self.left_index(index)
+    2 * index
   end
 
-  def self.right(index, nodes)
-    nodes[(2 * index) + 1]
+  def self.right_index(index)
+    2 * index + 1
   end
 
-  def self.parent(index, nodes)
-    nodes[index / 2]
+  def self.parent_index(index)
+    index / 2
   end
 
   def initialize
@@ -33,53 +33,67 @@ class Heap
     @size += 1
   end
 
+  def [](index)
+    @nodes[index]
+  end
+
+  def left(index)
+    @nodes[Heap.left_index(index)]
+  end
+
+  def right(index)
+    @nodes[Heap.right_index(index)]
+  end
+
+  def parent(index)
+    @nodes[Heap.parent_index(index)]
+  end
+
   private
 
     # Takes the last node and bubbles it up to where it will still
     # maintain the heap property. Should only be called from #insert
     def heapify_up!
+      ndx = @size - 1
+      while parent(ndx) && (parent(ndx) < self[ndx])
+        next_ndx = [Heap.parent_index(ndx), 1].max
+        swap!(ndx, next_ndx)
+        ndx = next_ndx
+      end
+    end
+
+    def swap!(src_ndx, dst_ndx)
+      @nodes[src_ndx], @nodes[dst_ndx] = @nodes[dst_ndx], @nodes[src_ndx]
     end
 end
 
 describe "Heap" do
-  describe "::left" do
-    it "returns the node at 2 * index" do
-      nodes = [nil, *1..10]
-      (1...nodes.size).each do |ndx|
+  describe "::left_index" do
+    it "returns 2 * index" do
+      10.times do
+        ndx = rand(1..100)
         exp = 2 * ndx
-        if exp > nodes.size - 1
-          assert_nil(Heap.left(ndx, nodes))
-        else
-          assert_equal(exp, Heap.left(ndx, nodes))
-        end
+        assert_equal(exp, Heap.left_index(ndx))
       end
     end
   end
 
-  describe "::right" do
-    it "returns the node at 2 * index" do
-      nodes = [nil, *1..10]
-      (1...nodes.size).each do |ndx|
+  describe "::right_index" do
+    it "returns 2 * index + 1" do
+      10.times do
+        ndx = rand(1..100)
         exp = (2 * ndx) + 1
-        if exp > nodes.size - 1
-          assert_nil(Heap.right(ndx, nodes))
-        else
-          assert_equal(exp, Heap.right(ndx, nodes))
-        end
+        assert_equal(exp, Heap.right_index(ndx))
       end
     end
   end
 
-  describe "::parent" do
-    it "returns the node at index / 2" do
-      nodes = [nil, *1..10]
-      (1...nodes.size).each do |ndx|
+  describe "::parent_index" do
+    it "returns index / 2" do
+      10.times do
+        ndx = rand(1..100)
         exp = ndx / 2
-        if exp == 0
-          assert_nil(Heap.parent(ndx, nodes))
-        else
-          assert_equal(exp, Heap.parent(ndx, nodes))
-        end
+        assert_equal(exp, Heap.parent_index(ndx))
       end
     end
   end
@@ -129,6 +143,18 @@ describe "Heap" do
 
       heap.insert(1)
       assert_nodes([nil, 42, 42, 1], heap.nodes)
+    end
+
+    it "maintains the heap property" do
+      def assert_valid_heap(heap, index)
+        node = heap[index]
+        return true if node.nil?
+
+        return false if heap.left(index) && heap.left(index) 
+        right = heap.right(index)
+        
+
+      end
     end
   end
 end
