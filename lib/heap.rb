@@ -29,6 +29,7 @@ class Heap
   end
 
   def insert(value)
+    @nodes << value
     @size += 1
   end
 
@@ -106,6 +107,28 @@ describe "Heap" do
 
       heap.insert(10)
       assert_equal(3, heap.size)
+    end
+
+    it "adds the value to #nodes" do
+      # Order agnostic comparison of expected and actual nodes
+      def assert_nodes(exp, act)
+        assert_nil(exp.first)
+        assert_nil(act.first)
+        nil_safe_sort = Proc.new { |x| x.nil? ? -Float::INFINITY : x }
+        assert_equal(exp.sort_by(&nil_safe_sort), act.sort_by(&nil_safe_sort))
+      end
+
+      heap = Heap.new
+      assert_nodes([nil], heap.nodes)
+
+      heap.insert(42)
+      assert_nodes([nil, 42], heap.nodes)
+
+      heap.insert(42)
+      assert_nodes([nil, 42, 42], heap.nodes)
+
+      heap.insert(1)
+      assert_nodes([nil, 42, 42, 1], heap.nodes)
     end
   end
 end
