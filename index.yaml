@@ -95,3 +95,4 @@ methods:
   - rotate
   - contains_duplicate
   - valid_sudoku
+  - heap
