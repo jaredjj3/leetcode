@@ -26,64 +26,141 @@ cache.get(3);       // returns 3
 cache.get(4);       // returns 4
 =end
 
-class Node
-  attr_accessor :key, :value, :prev, :next
+class LinkedList
+  class Node
+    attr_accessor :key, :value, :prev, :next
 
-  def initialize(key, value)
-    @key = key
-    @value = value
-    @prev = nil
-    @next = nil
-  end
-end
-
-class LRUCache
-  attr_accessor :capacity, :map, :nodes
-
-  def initialize(capacity)
-    @map = {}
-    @head = nil
-    @capacity = capacity
-  end
-
-  def values
-    values = []
-    curr = @head
-    
-    until curr.nil?
-      values.push(curr.value)
-      curr = curr.next
+    def initialize(key = nil, value = nil)
+      @key = key
+      @value = value
+      @prev = nil
+      @next = nil
     end
-    
-    values
+  end
+
+  attr_reader :size
+
+  include Enumerable
+
+  def initialize
+    @head = Node.new
+    @tail = Node.new
+    @size = 0
+
+    @head.next = @tail
+    @tail.prev = @head
+  end
+
+  def first
+    @head.next
+  end
+
+  def last
+    @tail.prev
+  end
+
+  def empty?
+    @head.next == @tail
+  end
+
+  def each(&blk)
+    node = @head.next
+    until node == @tail
+      blk.call(node)
+      node = node.next
+    end
+
+    self
+  end
+
+  def [](index)
+    detect.with_index { |node, ndx| ndx == index }
   end
 
   def get(key)
-    node = @map[key]
-    return -1 if node.nil?
-    requeue!(key)
-    node.value
+    detect { |node| node.key == key }
   end
 
-  def put(key, value)
-    unless @map[key].nil?
-      @map[key]
+  def key?(key)
+    any? { |node| node.key == key }
+  end
+
+  def append(key, value)
+    if key?(key)
+      node = get(key)
+      node.value = value
+    else
+      node = Node.new(key, value)
+      connect(last, node)
+      connect(node, @tail)
+      @size += 1
     end
 
-    evict! if @nodes.size > capacity
+    node
+  end
+
+  def remove(key)
+    return unless key?(key)
+    node = get(key)
+    connect(node.prev, node.next)
+    @size -= 1
+    node
   end
 
   private
 
-    def evict!
-      node = @nodes.pop
-      map.delete(node.key)
+    # Connects nodes from prev => next
+    def connect(src_node, dst_node)
+      src_node.next = dst_node
+      dst_node.prev = src_node
+    end
+end
+
+class LRUCache
+  attr_reader :size
+
+  def initialize(size)
+    @size = size
+    @list = LinkedList.new
+    @nodes = {}
+  end
+
+  def get(key)
+    return -1 unless @nodes.key?(key)
+    requeue!(key)
+    @nodes[key].value
+  end
+
+  def put(key, value)
+    if @nodes.key?(key)
+      @nodes[key].value = value
+      requeue!(key)
+    else
+      node = @list.append(key, value)
+      @nodes[key] = node
     end
 
+    evict! if @list.size > @size
+  end
+
+  def values
+    @list.to_a.map(&:value).reverse
+  end
+
+  private
+
     def requeue!(key)
-      node = @map[key]
-      @nodes.reject! { |n| n == node }
-      @nodes.unshift(node)
+      node = @list.remove(key)
+      new_node = @list.append(key, node.value)
+      @nodes[key] = new_node
+      new_node
+    end
+
+    def evict!
+      node = @list.first
+      return if node.nil?
+      @list.remove(node.key)
+      @nodes.delete(node.key)
     end
 end
 
