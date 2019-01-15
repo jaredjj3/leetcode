@@ -44,6 +44,13 @@ class Heap
     @nodes[1]
   end
 
+  def poll
+    node = @nodes[1]
+    @nodes[1] = @nodes.pop if size > 1
+    heapify_down!
+    node
+  end
+
   def has_left?(index)
     Heap.left_index(index) < size
   end
@@ -80,12 +87,41 @@ class Heap
       end
     end
 
+    # Takes the first node and sinks it to where it will still maintain
+    # the heap property. Should only be called from #poll
+    def heapify_down!
+      ndx = 1
+      while has_left?(ndx)
+        smaller_ndx = has_right?(ndx) && right(ndx) < left(ndx) ?
+          Heap.right_index(ndx) : Heap.left_index(ndx)
+        
+        break if self[smaller_ndx] > self[ndx]
+        
+        swap!(ndx, smaller_ndx)
+        ndx = smaller_ndx
+      end
+    end
+
     def swap!(src_ndx, dst_ndx)
       @nodes[src_ndx], @nodes[dst_ndx] = @nodes[dst_ndx], @nodes[src_ndx]
     end
 end
 
 describe "Heap" do
+  def valid_heap?(heap, index)
+    node = heap[index]
+
+    return true if node.nil?
+    return false if heap.has_left?(index) && heap.left(index) < node
+    return false if heap.has_right?(index) && heap.right(index) < node
+
+    valid_heap?(heap, Heap.left_index(index)) && valid_heap?(heap, Heap.right_index(index))
+  end
+
+  def assert_valid_heap(heap)
+    assert(valid_heap?(heap, 1), "#{heap.nodes.inspect} is not a valid heap")
+  end
+
   describe "::left_index" do
     it "returns 2 * index" do
       10.times do
@@ -164,20 +200,6 @@ describe "Heap" do
     end
 
     it "maintains the heap property" do
-      def valid_heap?(heap, index)
-        node = heap[index]
-
-        return true if node.nil?
-        return false if heap.has_left?(index) && heap.left(index) <= node
-        return false if heap.has_right?(index) && heap.right(index) <= node
-
-        valid_heap?(heap, Heap.left_index(index)) && valid_heap?(heap, Heap.right_index(index))
-      end
-
-      def assert_valid_heap(heap)
-        assert(valid_heap?(heap, 1), "#{heap.nodes.inspect} is not a valid heap")
-      end
-
       heap = Heap.new
       assert_valid_heap(heap)
 
@@ -185,6 +207,26 @@ describe "Heap" do
         heap.insert(node)
         assert_valid_heap(heap)
       end
+    end
+  end
+
+  describe "#poll" do
+    it "removes the minimum node and re-heapifies" do
+      heap = Heap.new
+      nodes = [*1..10]
+      nodes.each { |node| heap.insert(node) }
+
+      nodes.each do |node|
+        assert_equal(node, heap.poll)
+        assert_valid_heap(heap)
+      end
+    end
+
+    it "returns nil for a heap of size 0" do
+      heap = Heap.new
+
+      assert_nil(heap.poll)
+      assert_equal([nil], heap.nodes)
     end
   end
 end
