@@ -1,4 +1,4 @@
-methods:
+"1":
   - two_sum
   - to_lower_case
   - remove_dups
