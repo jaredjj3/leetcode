@@ -25,16 +25,35 @@ class Heap
 
   def initialize
     @nodes = [nil]
-    @size = 0
   end
 
   def insert(value)
     @nodes << value
-    @size += 1
+    heapify_up!
+  end
+
+  def size
+    @nodes.size - 1
   end
 
   def [](index)
     @nodes[index]
+  end
+
+  def peek
+    @nodes[1]
+  end
+
+  def has_left?(index)
+    Heap.left_index(index) < size
+  end
+
+  def has_right?(index)
+    Heap.right_index(index) < size
+  end
+
+  def has_parent?(index)
+    Heap.parent_index(index) > 0
   end
 
   def left(index)
@@ -54,11 +73,10 @@ class Heap
     # Takes the last node and bubbles it up to where it will still
     # maintain the heap property. Should only be called from #insert
     def heapify_up!
-      ndx = @size - 1
-      while parent(ndx) && (parent(ndx) < self[ndx])
-        next_ndx = [Heap.parent_index(ndx), 1].max
-        swap!(ndx, next_ndx)
-        ndx = next_ndx
+      ndx = size - 1
+      while has_parent?(ndx) && (parent(ndx) > self[ndx])
+        swap!(ndx, Heap.parent_index(ndx))
+        ndx = Heap.parent_index(ndx)
       end
     end
 
@@ -146,14 +164,26 @@ describe "Heap" do
     end
 
     it "maintains the heap property" do
-      def assert_valid_heap(heap, index)
+      def valid_heap?(heap, index)
         node = heap[index]
+
         return true if node.nil?
+        return false if heap.has_left?(index) && heap.left(index) <= node
+        return false if heap.has_right?(index) && heap.right(index) <= node
 
-        return false if heap.left(index) && heap.left(index) 
-        right = heap.right(index)
-        
+        valid_heap?(heap, Heap.left_index(index)) && valid_heap?(heap, Heap.right_index(index))
+      end
 
+      def assert_valid_heap(heap)
+        assert(valid_heap?(heap, 1), "#{heap.nodes.inspect} is not a valid heap")
+      end
+
+      heap = Heap.new
+      assert_valid_heap(heap)
+
+      [5, 1, 2, 3, 4, 5, 5, 2].shuffle.each do |node|
+        heap.insert(node)
+        assert_valid_heap(heap)
       end
     end
   end
