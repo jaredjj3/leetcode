@@ -15,8 +15,20 @@ task :test, :paths do |t, args|
     session = File.dirname(path).split("/").last
     method = File.basename(path, ".rb")
     cmd = "ruby #{method.end_with?("_test") ? path : test_path(session, method)}"
+
     puts cmd
-    system(cmd)
+    pid = spawn(cmd)
+
+    begin
+      Timeout.timeout(ENV.fetch("TEST_TIMEOUT", 3)) do
+        # puts "testing"
+        Process.wait(pid)
+        # puts "tests finished"
+      end
+    rescue Timeout::Error
+      # puts "tests hanging"
+      Process.kill("SIGINT", pid)
+    end
   end
 end
 
