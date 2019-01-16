@@ -2,7 +2,7 @@ require "yaml"
 require "fileutils"
 
 task :sync_index do
-  index = YAML.load(File.read("index.yaml"))
+  index = YAML.load(File.read("index.yaml")) || {}
   raise "index must have unique session names" if index.keys.size != index.keys.uniq.size
   sync_dirs!(index.keys)
   sync_files!(index)
@@ -12,10 +12,9 @@ task :test, :paths do |t, args|
   paths = args.paths || [ENV.fetch("TEST")]
 
   paths.each do |path|
-    session = File.dirname(path)
-    method = File.basename(path)
-    cmd = "ruby #{test_path(session, method)}"
-    system("cls")
+    session = File.dirname(path).split("/").last
+    method = File.basename(path, ".rb")
+    cmd = "ruby #{method.end_with?("_test") ? path : test_path(session, method)}"
     puts cmd
     system(cmd)
   end
@@ -62,14 +61,16 @@ def test_path(session, method)
 end
 
 def sync_dirs!(sessions)
-  created = create_session_dirs!(sessions)
-  puts "created dirs:\n#{created * "\n"}"
-  deleted = delete_extra_dirs!(sessions)
-  puts "deleted dirs:\n#{deleted * "\n"}"
+  created_dirs = create_session_dirs!(sessions)
+  puts "created dirs: #{created_dirs * ", "}" if created_dirs.any?
+  deleted_dirs = delete_extra_dirs!(sessions)
+  puts "deleted dirs: #{deleted_dirs * ", "}" if deleted_dirs.any?
 end
 
 def create_session_dirs!(sessions)
   sessions.each.with_object([]) do |session, created|
+    return [] if session.nil? || session.empty?
+
     lib_path = "lib/#{session}"
     test_path = "test/#{session}"
 
@@ -94,7 +95,7 @@ def delete_extra_dirs!(sessions)
 
   dirs, files = (existing - expected).partition { |path| File.directory?(path) }
   files.each { |path| File.delete(path) }
-  dirs.each { |path| FileUtil.rm_rf(path) }
+  dirs.each { |path| FileUtils.rm_rf(path) }
 
   [*dirs, *files]
 end
@@ -102,30 +103,35 @@ end
 def sync_files!(session_mapping)
   session_mapping.each do |session, methods|
     created_files = create_session_files!(session, methods)
-    puts "created files:\n#{created_files * "\n"}"
+    puts "created files: #{created_files * ", "}" if created_files.any?
     deleted_files = delete_extra_files!(session, methods)
-    puts "deleted files:\n#{deleted_files * "\n"}"
+    puts "deleted files: #{deleted_files * ", "}" if deleted_files.any?
   end
 end
 
 def create_session_files!(session, methods)
+  return [] if session.nil? || methods.nil? || session.empty?
+
   methods.each.with_object([]) do |method, created_files|
+    next if method.nil? || method.empty?
+
     lib_path = lib_path(session, method)
     test_path = test_path(session, method)
 
     unless File.exist?(lib_path)
-      File.open(lib_path, "w") { |file| file.write(lib_skeleton(method)) }
+      File.open(lib_path, "w") { |file| file.write(lib_skeleton(session, method)) }
       created_files << lib_path
     end
 
     unless File.exist?(test_path)
-      File.open(test_path, "w") { |file| file.write(test_skeleton(method)) }
+      File.open(test_path, "w") { |file| file.write(test_skeleton(session, method)) }
       created_files << test_path
     end
   end
 end
 
 def delete_extra_files!(session, methods)
+  return [] if session.nil? || methods.nil? || session.empty?
   existing = Dir["lib/#{session}/*"] + Dir["test/#{session}/*"]
   expected = methods.each.with_object([]) do |method, paths|
     paths << lib_path(session, method)
