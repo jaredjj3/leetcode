@@ -100,7 +100,7 @@ def delete_extra_dirs!(sessions)
 end
 
 def sync_files!(session_mapping)
-  index.each do |session, methods|
+  session_mapping.each do |session, methods|
     created_files = create_session_files!(session, methods)
     puts "created files:\n#{created_files * "\n"}"
     deleted_files = delete_extra_files!(session, methods)
