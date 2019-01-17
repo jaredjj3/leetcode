@@ -1,5 +1,8 @@
 "data_structures":
   - data_structures
   - heap
+  - linked_list
+  - graph
+  - tree
 "1":
   - palindrome
