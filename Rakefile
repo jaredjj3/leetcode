@@ -34,7 +34,7 @@ end
 
 def lib_skeleton(session, method)
 <<-RUBY.freeze
-require "minitest/autorun"
+require_relative "#{File.join("..", "data_structures", "data_structures.rb")}"
 
 # SESSION
 # #{session}
@@ -51,6 +51,7 @@ end
 
 def test_skeleton(session, method)
 <<-RUBY.freeze
+require "minitest/autorun"
 require_relative "#{File.join("..", "..", "lib", "#{session}", "#{method}.rb")}"
 
 # SESSION
