@@ -27,16 +27,31 @@ class Graph
     end
   end
 
-  attr_reader :matrix, :list
+  attr_reader :nodes, :matrix, :list
 
   def initialize
+    @nodes = []
     @matrix = []
     @list = {}
+  end
+
+  def get(key)
+    @list[key]
+  end
+
+  def has?(key)
+    @list.key?(key)
   end
 
   def add(key, value)
   end
 
   def remove(key)
+  end
+
+  def connect(key1, key2)
+  end
+
+  def children(key)
   end
 end
