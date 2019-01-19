@@ -18,4 +18,19 @@ Minimize the total number of operations.
 =end
 
 def move_zeroes(nums)
+  ndx = 0
+  times = 0
+
+  while times < nums.size
+    if nums[ndx] == 0
+      nums.delete_at(ndx)
+      nums << 0
+    else
+      ndx += 1
+    end
+
+    times += 1
+  end
+
+  nil
 end

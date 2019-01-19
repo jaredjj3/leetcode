@@ -5,21 +5,25 @@ require_relative "../../lib/1/move_zeroes.rb"
 # 1
 
 describe "#move_zeroes" do
-  it "solves empty arrays" do
+  it "returns nil" do
+    assert_nil(move_zeroes([1, 2, 4]))
+  end
+
+  it "move zeroes of empty arrays in place" do
     nums = []
     move_zeroes(nums)
     assert_equal([], nums)
   end
 
-  it "solves trivial arrays" do
+  it "moves zeroes of trivial arrays in place" do
     nums = [0, 1]
     move_zeroes(nums)
-    assert_equal([0, 1], nums)
+    assert_equal([1, 0], nums)
   end
 
-  it "moves zeros in place to the end of the array" do
+  it "moves zeroes of more complicated arrays in place and preserves order" do
     nums = [1, 0, 2, 3, 0, 4, 0, 0]
     move_zeroes(nums)
-    assert_equal([1, 2, 3, 4, 0, 0, 0], nums)
+    assert_equal([1, 2, 3, 4, 0, 0, 0, 0], nums)
   end
 end
