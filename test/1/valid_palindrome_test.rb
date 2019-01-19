@@ -16,7 +16,7 @@ describe "#valid_palindrome" do
   end
 
   it "returns false if it takes more than one character to make a palindrome" do
-    refute(valid_palindrome("abcca"))
-    refute(valid_palindrome("abcbca"))
+    refute(valid_palindrome("acccfbcca"))
+    refute(valid_palindrome("abcbcca"))
   end
 end
