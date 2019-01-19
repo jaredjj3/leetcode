@@ -1,11 +1,6 @@
 # SESSION
 # data_structures
 
-# PROMPT
-=begin
-
-=end
-
 class LinkedList
   class Node
     attr_reader :key
@@ -67,6 +62,7 @@ class LinkedList
     return unless include?(key)
     node = detect { |node| node.key == key }
     evict!(node)
+    @size -= 1
   end
 
   def each(&blk)
