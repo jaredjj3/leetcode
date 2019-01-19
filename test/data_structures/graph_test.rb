@@ -90,13 +90,18 @@ describe "Graph" do
       graph.add(1, value1)
       assert_equal(value1, graph.get(1).value)
       graph.add(1, value2)
-      assert_equal(valie2, graph.get(1).value)
+      assert_equal(value2, graph.get(1).value)
     end
   end
 
   describe "#remove" do
     it "returns the value that was removed" do
+      graph = Graph.new
+      value = Object.new
+      graph.add(1, value)
+
       assert_equal(value, graph.remove(1))
+      assert_nil(graph.remove(1))
     end
 
     it "removes the node from #nodes" do

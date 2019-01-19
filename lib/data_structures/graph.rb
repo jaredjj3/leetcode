@@ -27,16 +27,21 @@ class Graph
     end
   end
 
-  attr_reader :nodes, :matrix, :list
+  attr_reader :matrix, :list
 
   def initialize
-    @nodes = []
+    @nodes = {}
+    @index_by_key = {}
     @matrix = []
     @list = {}
   end
 
   def get(key)
-    @list[key]
+    @nodes[key]
+  end
+
+  def nodes
+    @nodes.values
   end
 
   def has?(key)
@@ -44,14 +49,61 @@ class Graph
   end
 
   def add(key, value)
+    if has?(key)
+      get(key).value = value
+    else
+      node = Node.new(key, value)
+      @index_by_key[key] = @nodes.size
+      @nodes[key] = node
+      @list[key] = []
+      @matrix << []
+      @matrix.each { |row| row.fill(false, row.size...@matrix.size) }
+    end
+
+    value
   end
 
   def remove(key)
+    return nil unless has?(key)
+
+    value = get(key).value
+    ndx = index(key)
+    @matrix.delete_at(ndx)
+    @matrix.each { |row| row.delete_at(ndx) }
+    @list.delete(key)
+    @nodes.reject! { |node_key| node_key == key }
+
+    value
   end
 
   def connect(key1, key2)
+    return false if !has?(key1) || !has?(key2)
+    return false if connected?(key1, key2)
+
+    @list[key1] << get(key2)
+
+    ndx1 = index(key1)
+    ndx2 = index(key2)
+    @matrix[ndx1][ndx2] = true
+
+    true
+  end
+
+  def connected?(key1, key2)
+    ndx1 = index(key1)
+    ndx2 = index(key2)
+    
+    return false if ndx1.nil? || ndx2.nil?
+    @matrix[ndx1][ndx2]
   end
 
   def children(key)
+    @list[key]
   end
+
+  private
+
+    def index(key)
+      @index_by_key[key]
+    end
 end
