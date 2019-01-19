@@ -22,7 +22,7 @@ describe LinkedList do
     list
   end
 
-  describe "#empty" do
+  describe "#empty?" do
     it "checks whether any links have been inserted" do
       assert(empty_list.empty?)
       refute(list.empty?)
@@ -32,7 +32,7 @@ describe LinkedList do
   describe "#insert" do 
     it "inserts nodes" do 
       empty_list.insert(:first, 1)
-      assert(empty_list.empty?)
+      refute(empty_list.empty?)
     end
 
     it "inserts links in order" do
@@ -80,10 +80,9 @@ describe LinkedList do
 
   describe "#each" do
     it "enumerates over the links and yields each successive link" do
-      list_vals_ordered = pairs.values
-      list_vals_yielded = []
-      list.each { |link| list_vals_yielded << link.val }
-      assert_equal(list_vals_yielded, list_vals_ordered)
+      yielded = []
+      list.each { |link| yielded << link.value }
+      assert_equal(pairs.values, yielded)
     end
 
   describe "#[]" do
@@ -95,7 +94,7 @@ describe LinkedList do
   end
 
     it "includes Enumerable module" do
-      assert_includes(Enumerable, list.class.ancestors)
+      assert_includes(list.class.ancestors, Enumerable)
     end
   end
 end
