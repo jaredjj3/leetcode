@@ -10,3 +10,4 @@
   - add_binary
   - three_sum
   - valid_palindrome
+  - min_sub_array_len
