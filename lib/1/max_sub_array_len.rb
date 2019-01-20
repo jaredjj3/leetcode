@@ -25,15 +25,20 @@ Can you do it in O(n) time?
 =end
 
 def max_sub_array_len(nums, k)
-end
-
-def running_sum(nums)
-  sum = []
+  sum = 0
+  max = 0
+  map = {}
 
   nums.each.with_index do |num, ndx|
-    prev = ndx == 0 ? 0 : sum[ndx - 1]
-    sum[ndx] = num + prev
+    sum += num
+    if sum == k
+      max = ndx + 1
+    elsif map.key?(sum - k)
+      max = [max, ndx - map[sum - k]].max
+    end
+
+    map[sum] ||= ndx
   end
 
-  sum
+  max
 end

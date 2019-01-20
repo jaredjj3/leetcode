@@ -15,9 +15,3 @@ describe "#max_sub_array_len" do
     assert_equal(2, max_sub_array_len([-2, -1, 2, 1], 1))
   end
 end
-
-describe "#running_sum" do
-  it "returns a new running sum array" do
-    assert_equal([1, 1, 3, 7, 12], running_sum([1, 0, 2, 4, 5]))
-  end
-end
