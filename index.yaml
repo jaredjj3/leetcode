@@ -12,3 +12,4 @@
   - valid_palindrome
   - min_sub_array_len
   - max_sub_array_len
+  - is_number
