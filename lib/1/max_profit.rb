@@ -25,5 +25,34 @@ Explanation: In this case, no transaction is done, i.e. max profit = 0.
 =end
 
 def max_profit(prices)
-  
+  return 0 if prices.empty?
+
+  max = -Float::INFINITY
+  maxes = Array.new(prices.size)
+  ndx = prices.size - 1
+  while ndx >= 0
+    price = prices[ndx]
+    max = [max, price].max
+    maxes[ndx] = max
+    ndx -= 1
+  end
+
+  min = Float::INFINITY
+  mins = Array.new(prices.size)
+  ndx = 0
+  while ndx < prices.size
+    price = prices[ndx]
+    min = [min, price].min
+    mins[ndx] = min
+    ndx += 1
+  end
+
+  profits = Array.new(prices.size)
+  ndx = 0
+  while ndx < prices.size
+    profits[ndx] = maxes[ndx] - mins[ndx]
+    ndx += 1
+  end
+
+  profits.max
 end
