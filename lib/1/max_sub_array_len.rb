@@ -28,4 +28,12 @@ def max_sub_array_len(nums, k)
 end
 
 def running_sum(nums)
+  sum = []
+
+  nums.each.with_index do |num, ndx|
+    prev = ndx == 0 ? 0 : sum[ndx - 1]
+    sum[ndx] = num + prev
+  end
+
+  sum
 end
