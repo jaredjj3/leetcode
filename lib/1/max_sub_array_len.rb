@@ -24,5 +24,8 @@ Follow Up:
 Can you do it in O(n) time?
 =end
 
-def max_sub_array_len
+def max_sub_array_len(nums, k)
+end
+
+def running_sum(nums)
 end
