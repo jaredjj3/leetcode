@@ -17,3 +17,5 @@
   - trap_rain_water
   - max_profit
   - num_decodings
+  - merge_sorted_array
+  - merge_intervals
