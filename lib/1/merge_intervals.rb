@@ -28,7 +28,7 @@ def merge_intervals(intervals)
     if merged.empty?
       merged << interval
     elsif merged.last.end >= interval.start
-      merged.last.end = interval.end
+      merged.last.end = [merged.last.end, interval.end].max
     else
       merged << interval
     end
