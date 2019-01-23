@@ -7,7 +7,7 @@ class Tree
   class Node
     attr_accessor :value, :left, :right
 
-    def initialize(key, value)
+    def initialize(value)
       @value = value
       @left = nil
       @right = nil

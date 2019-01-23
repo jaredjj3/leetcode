@@ -17,14 +17,16 @@ describe "#flatten_tree" do
     nodes[1].right = nodes[3]
 
     # 4
-    nodes.right  = nodes[5]
+    nodes[4].right = nodes[5]
 
     nodes
   end
 
   it "solves the problem prompt" do
     flatten_tree(nodes[0])
-    nodes.each { |node| assert_nil(node.left) }
-    nodes.each_cons(2) { |node1, node2| assert_equal(node2, node1.right) }
+
+    exp = [nil, 1, nil, 2, nil, 3, nil, 4, nil, 5, nil, nil]
+    act = nodes.flat_map { |node| [node.left&.value, node.right&.value] }
+    assert_equal(exp, act)
   end
 end
