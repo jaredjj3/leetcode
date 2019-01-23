@@ -20,3 +20,4 @@
   - merge_sorted_array
   - merge_intervals
   - remove_nth_node_from_end
+  - flatten_tree
