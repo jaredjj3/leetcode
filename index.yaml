@@ -4,6 +4,7 @@
   - linked_list
   - graph
   - tree
+  - trie
 "1":
   - palindrome
   - move_zeroes
